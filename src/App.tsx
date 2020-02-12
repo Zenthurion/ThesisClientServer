@@ -4,10 +4,12 @@ import './App.css';
 
 import LoginBox from "./components/LoginBox";
 import RoleSelection from "./components/RoleSelection";
-import {Colors} from "@blueprintjs/core";
 import {Role} from "./Role";
 import PresenterView from "./components/PresenterView";
 import AttendeeView from "./components/AttendeeView";
+import {createMuiTheme, ThemeProvider} from "@material-ui/core";
+import {Theme} from "@material-ui/core/styles/createMuiTheme";
+import {blueGrey, grey, lime, orange} from "@material-ui/core/colors";
 
 enum Page {
     Login,
@@ -18,55 +20,37 @@ enum Page {
 
 interface State {
     page: Page;
-    presentation: {
-        cardColor: string;
-        confirmColor: string;
-        cancelColor: string;
-        labelColorLight: string;
-        backgroundColor: string;
-        defaultButtonColor: string;
-        altButtonColor: string;
-    };
 }
 
-export interface PresentationProps {
-    presentation: {
-        cardColor: string;
-        confirmColor: string;
-        cancelColor: string;
-        labelColorLight: string;
-        backgroundColor: string;
-        defaultButtonColor: string;
-        altButtonColor: string;
+
+export const mainTheme : Theme = createMuiTheme({
+    palette: {
+        type: 'dark',
+        primary: lime,
+        secondary: orange
     }
-}
+});
 
-interface Props { }
-
-export default class App extends React.Component<Props,State> {
-    constructor(props: Props) {
+export default class App extends React.Component<any,State> {
+    constructor(props: any) {
         super(props);
 
         this.state = {
-            presentation: {
-                cardColor: Colors.GRAY1,
-                confirmColor: Colors.LIME3,
-                cancelColor: Colors.VERMILION2,
-                labelColorLight: Colors.LIGHT_GRAY5,
-                backgroundColor: Colors.DARK_GRAY2,
-                defaultButtonColor: Colors.TURQUOISE3,
-                altButtonColor: Colors.GOLD3
-            },
-            page: Page.Login};
+            page: Page.RoleSelection
+        };
+
+        document.body.style.background = grey[900];
     }
 
     render() {
         return (
-            <div className="App">
-                <header className="App-header" style={{background: this.state.presentation.backgroundColor, height: "100%"}}>
-                    {this.renderCurrentPage()}
-                </header>
-            </div>
+            <ThemeProvider theme={mainTheme}>
+                <div className="App">
+                    <header className="App-header">
+                        {this.renderCurrentPage()}
+                    </header>
+                </div>
+            </ThemeProvider>
         );
     }
     renderCurrentPage = () => {
@@ -76,13 +60,13 @@ export default class App extends React.Component<Props,State> {
         }
         switch (this.state.page) {
             case Page.Login:
-                return <LoginBox presentation={this.state.presentation} id={"login"} onLogin={this.onLogin}/>;
+                return <LoginBox onLogin={this.onLogin}/>;
             case Page.RoleSelection:
-                return <RoleSelection presentation={this.state.presentation} id={"role-selection"} onSelect={this.onSelect}/>;
+                return <RoleSelection onSelect={this.onSelect}/>;
             case Page.PresenterView:
-                return <PresenterView presentation={this.state.presentation} onBack={() => this.setState({page: Page.RoleSelection})}/>;
+                return <PresenterView onBack={() => this.setState({page: Page.RoleSelection})}/>;
             case Page.AttendeeView:
-                return <AttendeeView presentation={this.state.presentation} onBack={() => this.setState({page: Page.RoleSelection})}/>;
+                return <AttendeeView onBack={() => this.setState({page: Page.RoleSelection})}/>;
         }
     };
     onLogin = () => {

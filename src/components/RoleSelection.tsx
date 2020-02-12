@@ -1,10 +1,9 @@
 import React from 'react';
-import {Button, Card, Colors, Elevation, Label} from "@blueprintjs/core";
 import {Role} from "../Role";
-import {PresentationProps} from "../App";
+import {Box, Button, Card, Grid, Paper, Typography} from "@material-ui/core";
+import 'typeface-roboto';
 
-interface Props extends PresentationProps {
-    id: string
+interface Props {
     onSelect: (role: Role) => void
 }
 
@@ -15,14 +14,17 @@ export default class RoleSelection extends React.Component<Props> {
 
     render() {
         return (
-            <div id={this.props.id}>
-                <Card elevation={Elevation.TWO} style={{background: this.props.presentation.cardColor}}>
-                    <Label style={{color:Colors.LIGHT_GRAY5}}>Who are you?</Label>
-                    <Button text="PRESENTER / TEACHER" large={true} type={"button"} onClick={() => this.props.onSelect(Role.Presenter)} fill={true} style={{color: this.props.presentation.labelColorLight, background: this.props.presentation.defaultButtonColor}}/>
-                    <br />
-                    <Button text="ATTENDEE / STUDENT" large={true} type={"button"} onClick={() => this.props.onSelect(Role.Attendee)} fill={true} style={{color: this.props.presentation.labelColorLight, background: this.props.presentation.defaultButtonColor}}/>
-                </Card>
-            </div>
+            <Paper elevation={5} style={{paddingTop: '25px', paddingBottom: '25px'}}>
+                <Typography style={{marginBottom: '20px'}} color={'textPrimary'} variant={'h3'}>Who are you?</Typography>
+                <Grid container justify={'center'} alignItems={'center'} spacing={5}>
+                    <Grid item xs={5}>
+                        <Button style={{height: '80px'}} size={'large'} variant={'contained'} color={'primary'} onClick={() => this.props.onSelect(Role.Presenter)}>Presenter / Teacher</Button>
+                    </Grid>
+                    <Grid item xs={5}>
+                        <Button style={{height: '80px'}} size={'large'} variant={'contained'} color={'primary'} onClick={() => this.props.onSelect(Role.Attendee)}>Attendee / Student</Button>
+                    </Grid>
+                </Grid>
+            </Paper>
         );
     }
 }

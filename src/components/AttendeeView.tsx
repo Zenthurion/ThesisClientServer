@@ -1,13 +1,13 @@
 import React from "react";
-import {PresentationProps} from "../App";
 import SocketIOClient from 'socket.io-client';
-import {Button} from "@blueprintjs/core";
+import {Button} from '@material-ui/core';
+import PresentationView from "./PresentationView";
 
 interface State {
     message : string;
 }
 
-interface Props extends PresentationProps {
+interface Props {
     onBack : () => void;
 }
 
@@ -24,8 +24,9 @@ export default class AttendeeView extends React.Component<Props, State>{
     render() {
         return (
             <div>
+                <PresentationView showSlideCount={true} />
                 {this.renderMessage()}
-                <Button text="BACK" large={true} type={"button"} onClick={this.props.onBack} fill={false} style={{color: this.props.presentation.labelColorLight, background: this.props.presentation.defaultButtonColor}}/>
+                <Button variant={'contained'} color={'primary'} onClick={this.props.onBack}>Back</Button>
             </div>
         );
     };
