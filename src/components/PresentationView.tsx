@@ -1,7 +1,9 @@
 import React from "react";
-import {createMuiTheme, Grid, Paper, ThemeProvider} from "@material-ui/core";
+import {Container, createMuiTheme, Grid, Paper, ThemeProvider, Typography} from "@material-ui/core";
 import {Theme} from "@material-ui/core/styles/createMuiTheme";
 import {lime, orange} from "@material-ui/core/colors";
+import PresentationContent from "../PresentationContent";
+import {GridDirection} from "@material-ui/core/Grid/Grid";
 
 export const presentationTheme : Theme = createMuiTheme({
     palette: {
@@ -12,11 +14,13 @@ export const presentationTheme : Theme = createMuiTheme({
 });
 
 interface Props {
+    onClick? : () => void;
     showSlideCount: boolean;
+    content: PresentationContent;
 }
 
 interface State {
-    content: {};
+
 }
 
 export default class PresentationView extends React.Component<Props, State>{
@@ -26,12 +30,31 @@ export default class PresentationView extends React.Component<Props, State>{
     render() {
         return (
             <ThemeProvider theme={presentationTheme}>
-                <Paper style={{width: '100%', height: '100%'}}>
-                    <Grid>
-                        {this.state?.content ?? "CONTENT"}
-                    </Grid>
+                <Paper onClick={this.presentationClicked} style={{height: '100%'}}>
+                    <Container style={{paddingTop: '10px', paddingBottom: '10px'}}>
+                        <Grid container direction={'column'}>
+                            {this.renderTitle()}
+                            {this.renderBody()}
+                        </Grid>
+                    </Container>
                 </Paper>
             </ThemeProvider>
         );
     }
+
+    private presentationClicked = () => {
+        if(this.props.onClick === undefined) return;
+        this.props.onClick!();
+    };
+
+    private renderTitle = () => {
+        return <Grid item xl={2}>
+            <Typography color={'textPrimary'} variant={'h3'} align={'left'}>{this.props.content.title}</Typography>
+        </Grid>;
+    };
+    private renderBody = () => {
+        return <Grid item xl={8}>
+            <Typography color={'textPrimary'} variant={'body1'} align={'left'}>{this.props.content.body}</Typography>
+        </Grid>;
+    };
 }
