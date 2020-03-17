@@ -1,8 +1,10 @@
-import React from "react";
+import React from 'react';
 import SocketIOClient from 'socket.io-client';
 import {
     Backdrop,
-    Button, CircularProgress, Container,
+    Button,
+    CircularProgress,
+    Container,
     Dialog,
     DialogActions,
     DialogContent,
@@ -11,15 +13,15 @@ import {
     Grid,
     TextField
 } from '@material-ui/core';
-import PresentationView from "./PresentationView";
-import PresentationContent from "../PresentationContent";
+import PresentationView from './PresentationView';
+import SlideContent from '../SlideContent';
 
 interface State {
-    message : {
-        previousContent?: string;
-        content: string;
-        nextContent?: string;
-    },
+    controller: string;
+    message: {
+        slide: SlideContent;
+    };
+    currentSlideIndex: number;
     sessionId: string;
     attemptedSessionId?: string;
     inputError: boolean;
@@ -28,17 +30,29 @@ interface State {
 }
 
 interface Props {
-    onBack : () => void;
+    onBack: () => void;
 }
 
-export default class AttendeeView extends React.Component<Props, State>{
-
-    private socket : SocketIOClient.Socket;
+export default class AttendeeView extends React.Component<Props, State> {
+    private socket: SocketIOClient.Socket;
 
     constructor(props: Props) {
         super(props);
 
-        this.state = {message: { content: ""}, sessionId: "", inputError: false, isValidating: false, helperMessage: "Format needs to be '123456' or '123-456'"};
+        this.state = {
+            controller: 'attendee',
+            message: {
+                slide: {
+                    type: 'PlainSlide',
+                    content: { title: 'Uninitialised', body: 'Uninitialised' }
+                }
+            },
+            currentSlideIndex: 0,
+            sessionId: '',
+            inputError: false,
+            isValidating: false,
+            helperMessage: "Format needs to be '123456' or '123-456'"
+        };
         this.socket = SocketIOClient('http://localhost:3001');
     }
     render() {
@@ -47,87 +61,136 @@ export default class AttendeeView extends React.Component<Props, State>{
                 <Backdrop open={this.state.isValidating}>
                     <CircularProgress />
                 </Backdrop>
-                <Dialog open={this.state.sessionId == ""}>
+                <Dialog open={this.state.sessionId === ''}>
                     <DialogTitle>Enter Session ID</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Enter the provided session ID to view your presentation.<br /> E.g. 123-456.
+                            Enter the provided session ID to view your
+                            presentation.
+                            <br /> E.g. 123-456.
                         </DialogContentText>
                         <TextField
                             autoFocus
                             fullWidth={true}
-                            id={"sessionId"}
-                            label={"Session ID"}
-                            type={"text"}
+                            id={'sessionId'}
+                            label={'Session ID'}
+                            type={'text'}
                             helperText={this.state.helperMessage}
                             onChange={this.handleSessionIdTextFieldChange}
                             error={this.state.inputError}
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button color={"primary"} type={"submit"} onClick={this.handleSessionIdOnClick}>Join</Button>
-                        <Button color={"secondary"} onClick={this.props.onBack}>Leave</Button>
+                        <Button
+                            color={'primary'}
+                            type={'submit'}
+                            onClick={this.handleSessionIdOnClick}>
+                            Join
+                        </Button>
+                        <Button color={'secondary'} onClick={this.props.onBack}>
+                            Leave
+                        </Button>
                     </DialogActions>
                 </Dialog>
                 <Grid container>
-                    <Grid item xs={12} style={{width: '600px', height: '400px'}}><PresentationView showSlideCount={true} content={this.getContent()} /></Grid>
-                    <Grid item xs={2}><Button variant={'contained'} color={'primary'} onClick={this.props.onBack} style={{width: '100%'}}>Back</Button></Grid>
+                    <Grid
+                        item
+                        xs={12}
+                        style={{ width: '600px', height: '400px' }}>
+                        <PresentationView
+                            controller={this.state.controller}
+                            showSlideCount={true}
+                            content={this.state.message.slide}
+                        />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Button
+                            variant={'contained'}
+                            color={'primary'}
+                            onClick={this.props.onBack}
+                            style={{ width: '100%' }}>
+                            Back
+                        </Button>
+                    </Grid>
                 </Grid>
             </Container>
         );
-    };
+    }
 
     private handleSessionIdOnClick = () => {
         this.validateAttemptedSessionId();
     };
 
-    private handleSessionIdTextFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let input = event.target.value;
-        if(input.match('\\d{3}-\\d{3}')) {
-            this.setState({inputError: false, attemptedSessionId: input})
-        } else if(input.match('\\d{6}}')) {
-            this.setState( { inputError: false, attemptedSessionId: input.substr(0,3) + '-' + input.substr(3,3)});
+    private handleSessionIdTextFieldChange = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const input = event.target.value;
+        if (input.match('\\d{3}-\\d{3}')) {
+            this.setState({
+                inputError: false,
+                attemptedSessionId: input.replace('-', '')
+            });
+        } else if (input.match('\\d{6}')) {
+            this.setState({
+                inputError: false,
+                attemptedSessionId: input
+            });
         } else {
-            this.setState({ helperMessage: "Format needs to be '123456' or '123-456'" });
+            this.setState({
+                helperMessage: "Format needs to be '123456' or '123-456'"
+            });
         }
     };
 
     private validateAttemptedSessionId = () => {
-        this.setState({isValidating: true});
-        this.socket.emit('validate-session-id', `{ "sessionId": "${this.state.attemptedSessionId}"}`)
-            .on('session-id-validated', (json : any) => {
-                let data = JSON.parse(json);
-                if(this.state.attemptedSessionId == data.sessionId && data.isValid) {
-                    this.setState({sessionId: this.state.attemptedSessionId!, isValidating: false});
-
-                    this.socket.emit('register-attendee', `{ "sessionId": "${this.state.sessionId}" }`);
-                    this.socket.on('emit-presentation-content', (json: any) => {
-                        let data = JSON.parse(json);
-                        this.setState({message: { previousContent: data.previousSlide, content: data.currentSlide, nextContent: data.nextSlide}});
+        this.setState({ isValidating: true });
+        console.log(this.state.attemptedSessionId);
+        this.socket
+            .emit(
+                'validate-session-id',
+                `{ "sessionId": "${this.state.attemptedSessionId}"}`
+            )
+            .on('session-id-validated', (json: any) => {
+                const data = JSON.parse(json);
+                if (
+                    this.state.attemptedSessionId === data.sessionId &&
+                    data.isValid
+                ) {
+                    this.setState({
+                        sessionId: this.state.attemptedSessionId!,
+                        isValidating: false
                     });
-                    this.socket.emit('request-current-slide', `{ "sessionId": "${this.state.sessionId}" }`);
+
+                    this.socket.emit(
+                        'join-session',
+                        `{ "sessionId": "${this.state.sessionId}", "username": "No Name" }`
+                    );
+                    this.socket.on(
+                        'emit-presentation-content',
+                        (contentJSON: any) =>
+                            this.handlePresentationContent(contentJSON)
+                    );
+                    this.socket.emit(
+                        'request-current-slide',
+                        `{ "sessionId": "${this.state.sessionId}" }`
+                    );
                 } else {
                     this.setState({
                         isValidating: false,
                         inputError: true,
-                        helperMessage: "Invalid Session ID"
+                        helperMessage: 'Invalid Session ID'
                     });
                 }
             });
     };
 
-    private getContent = () => {
-        return new PresentationContent(this.state.message.content);
-    };
-
-    private renderMessage = () => {
-      if(this.state === undefined || this.state.message === undefined) {
-          console.log('no message...');
-          return "";
-      }
-      return (<p>
-          {this.state.message}
-      </p>);
+    private handlePresentationContent = (json: any) => {
+        this.setState({
+            message: {
+                slide: json.currentSlide
+            },
+            currentSlideIndex: parseInt(json.index, 10)
+        });
     };
 
     componentDidMount(): void {

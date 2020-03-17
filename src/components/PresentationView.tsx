@@ -1,11 +1,23 @@
-import React from "react";
-import {Container, createMuiTheme, Grid, Paper, ThemeProvider, Typography} from "@material-ui/core";
-import {Theme} from "@material-ui/core/styles/createMuiTheme";
-import {lime, orange} from "@material-ui/core/colors";
-import PresentationContent from "../PresentationContent";
-import {GridDirection} from "@material-ui/core/Grid/Grid";
+import React from 'react';
+import {
+    Container,
+    createMuiTheme,
+    Grid,
+    Paper,
+    ThemeProvider,
+    Typography,
+    Box
+} from '@material-ui/core';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import { lime, orange } from '@material-ui/core/colors';
+import { GridDirection } from '@material-ui/core/Grid/Grid';
+import PlainSlideContent from './PlainSlideContent';
+import MultipleChoiceSlideContent from './MultipleChoiceSlideContent';
+import TextAnswerSlideContent from './TextAnswerSlideContent';
+import SlideContent from '../SlideContent';
+import SlideChoiceSlideContent from './SlideChoiceSlide';
 
-export const presentationTheme : Theme = createMuiTheme({
+export const presentationTheme: Theme = createMuiTheme({
     palette: {
         type: 'light',
         primary: lime,
@@ -14,47 +26,67 @@ export const presentationTheme : Theme = createMuiTheme({
 });
 
 interface Props {
-    onClick? : () => void;
+    controller: string;
+    onClick?: () => void;
     showSlideCount: boolean;
-    content: PresentationContent;
+    content: SlideContent;
 }
 
-interface State {
+interface State {}
 
-}
-
-export default class PresentationView extends React.Component<Props, State>{
+export default class PresentationView extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
     }
     render() {
         return (
             <ThemeProvider theme={presentationTheme}>
-                <Paper onClick={this.presentationClicked} style={{height: '100%'}}>
-                    <Container style={{paddingTop: '10px', paddingBottom: '10px'}}>
-                        <Grid container direction={'column'}>
-                            {this.renderTitle()}
-                            {this.renderBody()}
-                        </Grid>
-                    </Container>
+                <Paper
+                    onClick={this.presentationClicked}
+                    style={{
+                        height: '100%',
+                        padding: '10px'
+                    }}>
+                    {this.renderContent()}
                 </Paper>
             </ThemeProvider>
         );
     }
 
-    private presentationClicked = () => {
-        if(this.props.onClick === undefined) return;
-        this.props.onClick!();
+    private renderContent = () => {
+        switch (this.props.content.type) {
+            case 'PlainSlide':
+                return (
+                    <PlainSlideContent
+                        controller={this.props.controller}
+                        slide={this.props.content}></PlainSlideContent>
+                );
+            case 'MultipleChoiceSlide':
+                return (
+                    <MultipleChoiceSlideContent
+                        controller={this.props.controller}
+                        slide={this.props.content}></MultipleChoiceSlideContent>
+                );
+            case 'TextAnswerSlide':
+                return (
+                    <TextAnswerSlideContent
+                        controller={this.props.controller}
+                        slide={this.props.content}></TextAnswerSlideContent>
+                );
+            case 'SlideChoiceSlide':
+                return (
+                    <SlideChoiceSlideContent
+                        controller={this.props.controller}
+                        slide={this.props.content}></SlideChoiceSlideContent>
+                );
+            default:
+                console.log(this.props.content);
+                return '';
+        }
     };
 
-    private renderTitle = () => {
-        return <Grid item xl={2}>
-            <Typography color={'textPrimary'} variant={'h3'} align={'left'}>{this.props.content.title}</Typography>
-        </Grid>;
-    };
-    private renderBody = () => {
-        return <Grid item xl={8}>
-            <Typography color={'textPrimary'} variant={'body1'} align={'left'}>{this.props.content.body}</Typography>
-        </Grid>;
+    private presentationClicked = () => {
+        if (this.props.onClick === undefined) return;
+        this.props.onClick!();
     };
 }

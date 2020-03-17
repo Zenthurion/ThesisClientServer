@@ -2,14 +2,14 @@ import React from 'react';
 //import logo from './logo.svg';
 import './App.css';
 
-import LoginBox from "./components/LoginBox";
-import RoleSelection from "./components/RoleSelection";
-import {Role} from "./Role";
-import PresenterView from "./components/PresenterView";
-import AttendeeView from "./components/AttendeeView";
-import {createMuiTheme, ThemeProvider} from "@material-ui/core";
-import {Theme} from "@material-ui/core/styles/createMuiTheme";
-import {blueGrey, grey, lime, orange} from "@material-ui/core/colors";
+import LoginBox from './components/LoginBox';
+import RoleSelection from './components/RoleSelection';
+import { Role } from './Role';
+import PresenterView from './components/PresenterView';
+import AttendeeView from './components/AttendeeView';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import { blueGrey, grey, lime, orange } from '@material-ui/core/colors';
 
 enum Page {
     Login,
@@ -22,8 +22,7 @@ interface State {
     page: Page;
 }
 
-
-export const mainTheme : Theme = createMuiTheme({
+export const mainTheme: Theme = createMuiTheme({
     palette: {
         type: 'dark',
         primary: lime,
@@ -31,7 +30,7 @@ export const mainTheme : Theme = createMuiTheme({
     }
 });
 
-export default class App extends React.Component<any,State> {
+export default class App extends React.Component<any, State> {
     constructor(props: any) {
         super(props);
 
@@ -45,8 +44,8 @@ export default class App extends React.Component<any,State> {
     render() {
         return (
             <ThemeProvider theme={mainTheme}>
-                <div className="App">
-                    <header className="App-header">
+                <div className='App'>
+                    <header className='App-header'>
                         {this.renderCurrentPage()}
                     </header>
                 </div>
@@ -54,33 +53,44 @@ export default class App extends React.Component<any,State> {
         );
     }
     renderCurrentPage = () => {
-        if(this.state.page === undefined) {
-            this.setState({page: Page.Login});
-            console.log("Trying to set state...");
+        if (this.state.page === undefined) {
+            this.setState({ page: Page.Login });
+            console.log('Trying to set state...');
         }
         switch (this.state.page) {
             case Page.Login:
-                return <LoginBox onLogin={this.onLogin}/>;
+                return <LoginBox onLogin={this.onLogin} />;
             case Page.RoleSelection:
-                return <RoleSelection onSelect={this.onSelect}/>;
+                return <RoleSelection onSelect={this.onSelect} />;
             case Page.PresenterView:
-                return <PresenterView onBack={() => this.setState({page: Page.RoleSelection})}/>;
+                return (
+                    <PresenterView
+                        onBack={() =>
+                            this.setState({ page: Page.RoleSelection })
+                        }
+                    />
+                );
             case Page.AttendeeView:
-                return <AttendeeView onBack={() => this.setState({page: Page.RoleSelection})}/>;
+                return (
+                    <AttendeeView
+                        onBack={() =>
+                            this.setState({ page: Page.RoleSelection })
+                        }
+                    />
+                );
         }
     };
     onLogin = () => {
-        this.setState({page: Page.RoleSelection})
+        this.setState({ page: Page.RoleSelection });
     };
     onSelect = (role: Role) => {
         switch (role) {
             case Role.Attendee:
-                this.setState({page: Page.AttendeeView});
+                this.setState({ page: Page.AttendeeView });
                 break;
             case Role.Presenter:
-                this.setState({page: Page.PresenterView});
+                this.setState({ page: Page.PresenterView });
                 break;
         }
     };
-
 }
