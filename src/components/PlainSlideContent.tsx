@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Typography, Box } from '@material-ui/core';
+import { Grid, Typography, Box, Container } from '@material-ui/core';
 import SlideContent from '../SlideContent';
 
 interface Props {
@@ -14,20 +14,26 @@ export default class PlainSlideContent extends React.Component<Props> {
 
     render() {
         return (
-            <Grid
-                direction='column'
-                justify='space-between'
-                alignItems='stretch'
-                container>
-                <Grid item>
-                    <Typography>{this.props.slide.content.title}</Typography>
-                </Grid>
-                <Grid item>
-                    <Box height='100%'>
-                        <Typography>{this.props.slide.content.body}</Typography>
-                    </Box>
-                </Grid>
-            </Grid>
+            <Box paddingLeft='20px' paddingRight='20px' height='100%'>
+                <Box
+                    display='flex'
+                    justifyContent='center'
+                    alignItems='center'
+                    height='70px'>
+                    <Typography variant='h3'>
+                        {this.props.slide.content.title}
+                    </Typography>
+                </Box>
+                <Box
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='center'
+                    height='calc(100% - 70px)'>
+                    <Typography variant='body1'>
+                        {this.props.slide.content.body}
+                    </Typography>
+                </Box>
+            </Box>
         );
     }
 }

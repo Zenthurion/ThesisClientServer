@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Typography, Button, TextField } from '@material-ui/core';
+import { Grid, Typography, Button, TextField, Box } from '@material-ui/core';
 import SlideContent from '../SlideContent';
 
 interface Props {
@@ -14,20 +14,28 @@ export default class TextAnswerSlideContent extends React.Component<Props> {
 
     render() {
         return (
-            <Grid
-                container
-                direction='column'
-                justify='center'
-                alignItems='center'>
-                <Grid item>
-                    <Typography>{this.props.slide.content.title}</Typography>
-                </Grid>
-                <Grid item>
-                    <Typography>{this.props.slide.content.body}</Typography>
-                </Grid>
+            <Box paddingLeft='20px' paddingRight='20px' height='100%'>
+                <Box
+                    display='flex'
+                    justifyContent='center'
+                    alignItems='center'
+                    height='70px'>
+                    <Typography variant='h3'>
+                        {this.props.slide.content.title}
+                    </Typography>
+                </Box>
+                <Box
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='center'
+                    height='calc(60% - 70px)'>
+                    <Typography variant='body1'>
+                        {this.props.slide.content.body}
+                    </Typography>
+                </Box>
                 {this.renderInput()}
                 {this.renderSubmit()}
-            </Grid>
+            </Box>
         );
     }
 
@@ -36,13 +44,21 @@ export default class TextAnswerSlideContent extends React.Component<Props> {
             return '';
         } else {
             return (
-                <Grid item>
+                <Box
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='center'
+                    height='30%'>
                     <TextField
+                        multiline
+                        variant='outlined'
+                        rows='4'
+                        rowsMax='8'
                         disabled={
                             this.props.controller !==
                             this.props.slide.content.controller
                         }></TextField>
-                </Grid>
+                </Box>
             );
         }
     };
@@ -52,15 +68,17 @@ export default class TextAnswerSlideContent extends React.Component<Props> {
             return '';
         } else {
             return (
-                <Grid item>
+                <Box display='flex' justifyContent='flex-end' height='10%'>
                     <Button
+                        variant={'contained'}
+                        color={'primary'}
                         disabled={
                             this.props.controller !==
                             this.props.slide.content.controller
                         }>
                         Submit
                     </Button>
-                </Grid>
+                </Box>
             );
         }
     };

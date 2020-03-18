@@ -11,7 +11,8 @@ import {
     DialogContentText,
     DialogTitle,
     Grid,
-    TextField
+    TextField,
+    Box
 } from '@material-ui/core';
 import PresentationView from './PresentationView';
 import SlideContent from '../SlideContent';
@@ -57,7 +58,13 @@ export default class AttendeeView extends React.Component<Props, State> {
     }
     render() {
         return (
-            <Container>
+            <Box
+                height='100vh'
+                width='100vw'
+                display='flex'
+                flexDirection='column'
+                justifyContent='center'
+                alignItems='center'>
                 <Backdrop open={this.state.isValidating}>
                     <CircularProgress />
                 </Backdrop>
@@ -92,28 +99,20 @@ export default class AttendeeView extends React.Component<Props, State> {
                         </Button>
                     </DialogActions>
                 </Dialog>
-                <Grid container>
-                    <Grid
-                        item
-                        xs={12}
-                        style={{ width: '600px', height: '400px' }}>
-                        <PresentationView
-                            controller={this.state.controller}
-                            showSlideCount={true}
-                            content={this.state.message.slide}
-                        />
-                    </Grid>
-                    <Grid item xs={2}>
-                        <Button
-                            variant={'contained'}
-                            color={'primary'}
-                            onClick={this.props.onBack}
-                            style={{ width: '100%' }}>
-                            Back
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Container>
+                <Box
+                    display='flex'
+                    justifyContent='center'
+                    alignItems='center'
+                    height='100%'
+                    width='100%'
+                    margin='10px'>
+                    <PresentationView
+                        controller={this.state.controller}
+                        showSlideCount={true}
+                        content={this.state.message.slide}
+                    />
+                </Box>
+            </Box>
         );
     }
 

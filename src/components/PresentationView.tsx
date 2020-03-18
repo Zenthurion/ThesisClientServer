@@ -45,7 +45,7 @@ export default class PresentationView extends React.Component<Props, State> {
                     onClick={this.presentationClicked}
                     style={{
                         height: '100%',
-                        padding: '10px'
+                        width: '100%'
                     }}>
                     {this.renderContent()}
                 </Paper>

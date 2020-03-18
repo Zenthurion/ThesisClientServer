@@ -44,11 +44,7 @@ export default class App extends React.Component<any, State> {
     render() {
         return (
             <ThemeProvider theme={mainTheme}>
-                <div className='App'>
-                    <header className='App-header'>
-                        {this.renderCurrentPage()}
-                    </header>
-                </div>
+                <div className='App'>{this.renderCurrentPage()}</div>
             </ThemeProvider>
         );
     }

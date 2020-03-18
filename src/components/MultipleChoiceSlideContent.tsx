@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Typography, TextField, Button } from '@material-ui/core';
+import { Grid, Typography, TextField, Button, Box } from '@material-ui/core';
 import SlideContent from '../SlideContent';
 
 interface Props {
@@ -13,20 +13,34 @@ export default class MultipleChoiceSlideContent extends React.Component<Props> {
 
     render() {
         return (
-            <Grid
-                container
-                direction='column'
-                justify='center'
-                alignItems='center'>
-                <Grid item>
-                    <Typography>{this.props.slide.content.title}</Typography>
-                </Grid>
-                <Grid item>
-                    <Typography>{this.props.slide.content.body}</Typography>
-                </Grid>
-                <Grid item>
+            <Box paddingLeft='20px' paddingRight='20px' height='100%'>
+                <Box
+                    display='flex'
+                    justifyContent='center'
+                    alignItems='center'
+                    height='70px'>
+                    <Typography variant='h3'>
+                        {this.props.slide.content.title}
+                    </Typography>
+                </Box>
+                <Box
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='center'
+                    height='calc(70% - 70px)'>
+                    <Typography variant='body1'>
+                        {this.props.slide.content.body}
+                    </Typography>
+                </Box>
+                <Box
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='center'
+                    height='20%'>
                     {this.props.slide.content.options?.map((text, i) => (
                         <Button
+                            variant={'contained'}
+                            color={'secondary'}
                             key={i}
                             disabled={
                                 this.props.controller !==
@@ -35,9 +49,9 @@ export default class MultipleChoiceSlideContent extends React.Component<Props> {
                             {text}
                         </Button>
                     ))}
-                </Grid>
+                </Box>
                 {this.renderSubmit()}
-            </Grid>
+            </Box>
         );
     }
 
@@ -46,9 +60,17 @@ export default class MultipleChoiceSlideContent extends React.Component<Props> {
             return '';
         }
         return (
-            <Grid item>
-                <Button>Submit</Button>
-            </Grid>
+            <Box display='flex' justifyContent='flex-end' height='10%'>
+                <Button
+                    variant={'contained'}
+                    color={'primary'}
+                    disabled={
+                        this.props.controller !==
+                        this.props.slide.content.controller
+                    }>
+                    Submit
+                </Button>
+            </Box>
         );
     };
 }

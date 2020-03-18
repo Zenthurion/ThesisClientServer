@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Grid, Typography } from '@material-ui/core';
+import { Button, Grid, Typography, Box, Container } from '@material-ui/core';
 import PresentationView from './PresentationView';
 import SocketIOClient from 'socket.io-client';
 import SlideContent from '../SlideContent';
@@ -39,52 +39,73 @@ export default class PresenterView extends React.Component<Props, State> {
 
     render = () => {
         return (
-            <Grid container>
-                <Grid item xs={6}>
-                    <Typography color={'textPrimary'}>
-                        Session ID:{' '}
-                        {this.state.sessionId.substring(0, 3) +
-                            '-' +
-                            this.state.sessionId.substring(3, 6)}
-                    </Typography>
-                </Grid>
-                <Grid item xs={12} style={{ width: '600px', height: '400px' }}>
+            <Box
+                height='100vh'
+                width='100vw'
+                display='flex'
+                flexDirection='column'
+                justifyContent='center'
+                alignItems='center'>
+                <Box
+                    display='flex'
+                    justifyContent='center'
+                    alignItems='center'
+                    height='30px'>
+                    <Box>
+                        <Typography color={'textPrimary'}>
+                            Session ID:{' '}
+                            {this.state.sessionId.substring(0, 3) +
+                                '-' +
+                                this.state.sessionId.substring(3, 6)}
+                        </Typography>
+                    </Box>
+                </Box>
+                <Box
+                    display='flex'
+                    justifyContent='center'
+                    alignItems='center'
+                    height='calc(100% - 80px)'
+                    width='calc(100% - 20px)'
+                    marginLeft='10px'
+                    marginRight='10px'>
                     <PresentationView
                         controller={this.state.controller}
                         showSlideCount={true}
                         content={this.state.message.slide}
                     />
-                </Grid>
-                <Grid direction={'row'} alignItems={'center'} container>
-                    <Grid item xs={2}>
-                        <Button
-                            variant={'contained'}
-                            color={'primary'}
-                            onClick={this.previousSlide}
-                            style={{ width: '100%' }}>
-                            Previous
-                        </Button>
+                </Box>
+                <Box
+                    display='flex'
+                    justifyContent='center'
+                    alignItems='center'
+                    height='50px'
+                    width='90%'>
+                    <Grid container justify='center' spacing={1}>
+                        <Grid item>
+                            <Box>
+                                <Button
+                                    variant={'contained'}
+                                    color={'primary'}
+                                    onClick={this.previousSlide}
+                                    style={{ width: '120px' }}>
+                                    Previous
+                                </Button>
+                            </Box>
+                        </Grid>
+                        <Grid item>
+                            <Box>
+                                <Button
+                                    variant={'contained'}
+                                    color={'primary'}
+                                    onClick={this.nextSlide}
+                                    style={{ width: '120px' }}>
+                                    Next
+                                </Button>
+                            </Box>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={2}>
-                        <Button
-                            variant={'contained'}
-                            color={'primary'}
-                            onClick={this.nextSlide}
-                            style={{ width: '100%' }}>
-                            Next
-                        </Button>
-                    </Grid>
-                </Grid>
-                <Grid item xs={2}>
-                    <Button
-                        variant={'contained'}
-                        color={'primary'}
-                        onClick={this.props.onBack}
-                        style={{ width: '100%' }}>
-                        Back
-                    </Button>
-                </Grid>
-            </Grid>
+                </Box>
+            </Box>
         );
     };
 
