@@ -3,6 +3,7 @@ import { Button, Grid, Typography, Box, Container } from '@material-ui/core';
 import PresentationView from './PresentationView';
 import SocketIOClient from 'socket.io-client';
 import SlideContent from '../SlideContent';
+import AttendeeList from './AttendeeList';
 
 interface State {
     controller: string;
@@ -73,6 +74,7 @@ export default class PresenterView extends React.Component<Props, State> {
                         showSlideCount={true}
                         content={this.state.message.slide}
                     />
+                    <AttendeeList attendees={[]} socket={this.socket} />
                 </Box>
                 <Box
                     display='flex'
