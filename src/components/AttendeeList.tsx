@@ -11,6 +11,7 @@ import {
     TableRow
 } from '@material-ui/core';
 import { presentationTheme } from './PresentationView';
+import { mainTheme } from '../App';
 
 interface Props {
     socket: SocketIOClient.Socket;
@@ -30,9 +31,10 @@ export default class AttendeeList extends React.Component<Props, State> {
 
     render() {
         return (
-            <ThemeProvider theme={presentationTheme}>
+            <ThemeProvider theme={mainTheme}>
                 <TableContainer
                     component={Paper}
+                    square={true}
                     style={{ width: '200px', height: '100%' }}>
                     <Table size='small'>
                         <TableHead>
@@ -41,10 +43,7 @@ export default class AttendeeList extends React.Component<Props, State> {
                         <TableBody>
                             {this.state?.attendees?.map(attendee => (
                                 <TableRow key={attendee}>
-                                    <TableCell
-                                        component='th'
-                                        scope='row'
-                                        variant='body'>
+                                    <TableCell variant='body'>
                                         {attendee}
                                     </TableCell>
                                 </TableRow>

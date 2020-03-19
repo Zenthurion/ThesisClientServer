@@ -4,6 +4,9 @@ import PresentationView from './PresentationView';
 import SocketIOClient from 'socket.io-client';
 import SlideContent from '../SlideContent';
 import AttendeeList from './AttendeeList';
+import PresentationStructureView, {
+    StructureItem
+} from './PresentationStructureView';
 
 interface State {
     controller: string;
@@ -12,6 +15,7 @@ interface State {
     };
     sessionId: string;
     currentSlideIndex: number;
+    presentationStructure: StructureItem[];
 }
 
 interface Props {
@@ -33,7 +37,8 @@ export default class PresenterView extends React.Component<Props, State> {
                 }
             },
             sessionId: 'Loading Session ID',
-            currentSlideIndex: 0
+            currentSlideIndex: 0,
+            presentationStructure: []
         };
         this.socket = SocketIOClient('http://localhost:3001');
     }
@@ -63,18 +68,38 @@ export default class PresenterView extends React.Component<Props, State> {
                 </Box>
                 <Box
                     display='flex'
+                    flexDirection='column'
                     justifyContent='center'
                     alignItems='center'
                     height='calc(100% - 80px)'
                     width='calc(100% - 20px)'
                     marginLeft='10px'
                     marginRight='10px'>
-                    <PresentationView
-                        controller={this.state.controller}
-                        showSlideCount={true}
-                        content={this.state.message.slide}
-                    />
-                    <AttendeeList attendees={[]} socket={this.socket} />
+                    <Box
+                        display='flex'
+                        flexDirection='row'
+                        width='100%'
+                        height='100%'>
+                        <PresentationView
+                            controller={this.state.controller}
+                            showSlideCount={true}
+                            content={this.state.message.slide}
+                        />
+                        <AttendeeList attendees={[]} socket={this.socket} />
+                    </Box>
+                    <Box display='flex' flexDirection='row' width='100%'>
+                        {this.state.presentationStructure !== undefined ? (
+                            <PresentationStructureView
+                                onSlideClicked={
+                                    this.handlePresentationStructureSlideClicked
+                                }
+                                structure={this.state.presentationStructure}
+                                currentSlideIndex={this.state.currentSlideIndex}
+                            />
+                        ) : (
+                            ''
+                        )}
+                    </Box>
                 </Box>
                 <Box
                     display='flex'
@@ -110,28 +135,30 @@ export default class PresenterView extends React.Component<Props, State> {
             </Box>
         );
     };
+    private handlePresentationStructureSlideClicked = (index: number) => {
+        this.socket.emit('request-slide-change', { slide: index });
+    };
 
     private nextSlide = () => {
-        this.socket.emit(
-            'request-slide-change',
-            `{ "slide": "${this.state.currentSlideIndex + 1}" }`
-        );
+        this.socket.emit('request-slide-change', {
+            slide: this.state.currentSlideIndex + 1
+        });
     };
 
     private previousSlide = () => {
-        this.socket.emit(
-            'request-slide-change',
-            `{ "slide": "${this.state.currentSlideIndex - 1}" }`
-        );
+        this.socket.emit('request-slide-change', {
+            slide: this.state.currentSlideIndex - 1
+        });
     };
 
     componentDidMount(): void {
         this.socket.emit(`presenter-connected`);
         this.socket.emit(`request-new-session`, { presentationRef: '0' });
-        this.socket.once(`new-session-created`, (json: any) => {
-            const data = JSON.parse(json);
-            this.setState({ sessionId: data.sessionId });
-            console.log('Session ID received: ' + data.sessionId);
+        this.socket.once(`new-session-created`, (data: any) => {
+            this.setState({
+                sessionId: data.sessionId,
+                presentationStructure: data.presentationStructure
+            });
         });
         this.socket.on('emit-presentation-content', (json: any) => {
             this.setState({

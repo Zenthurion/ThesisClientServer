@@ -40,16 +40,23 @@ export default class PresentationView extends React.Component<Props, State> {
     }
     render() {
         return (
-            <ThemeProvider theme={presentationTheme}>
-                <Paper
-                    onClick={this.presentationClicked}
-                    style={{
-                        height: '100%',
-                        width: '100%'
-                    }}>
-                    {this.renderContent()}
-                </Paper>
-            </ThemeProvider>
+            <Paper
+                square
+                style={{
+                    height: '100%',
+                    width: '100%'
+                }}>
+                <ThemeProvider theme={presentationTheme}>
+                    <Paper
+                        onClick={this.presentationClicked}
+                        style={{
+                            height: '100%',
+                            width: '100%'
+                        }}>
+                        {this.renderContent()}
+                    </Paper>
+                </ThemeProvider>
+            </Paper>
         );
     }
 
