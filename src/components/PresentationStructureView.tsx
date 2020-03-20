@@ -55,10 +55,6 @@ export default class PresentationStructureView extends React.Component<Props> {
         );
     }
 
-    componentDidMount = () => {
-        console.log(this.props.structure);
-    };
-
     private renderCard = (item: StructureItem, index: number) => {
         return (
             <ThemeProvider key={index} theme={presentationTheme}>

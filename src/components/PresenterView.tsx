@@ -1,5 +1,12 @@
 import React from 'react';
-import { Button, Grid, Typography, Box, Container } from '@material-ui/core';
+import {
+    Button,
+    Grid,
+    Typography,
+    Box,
+    Container,
+    Drawer
+} from '@material-ui/core';
 import PresentationView from './PresentationView';
 import SocketIOClient from 'socket.io-client';
 import SlideContent from '../SlideContent';
@@ -16,6 +23,7 @@ interface State {
     sessionId: string;
     currentSlideIndex: number;
     presentationStructure: StructureItem[];
+    presentationStructureVisibility: boolean;
 }
 
 interface Props {
@@ -38,7 +46,8 @@ export default class PresenterView extends React.Component<Props, State> {
             },
             sessionId: 'Loading Session ID',
             currentSlideIndex: 0,
-            presentationStructure: []
+            presentationStructure: [],
+            presentationStructureVisibility: false
         };
         this.socket = SocketIOClient('http://localhost:3001');
     }
@@ -54,9 +63,9 @@ export default class PresenterView extends React.Component<Props, State> {
                 alignItems='center'>
                 <Box
                     display='flex'
-                    justifyContent='center'
-                    alignItems='center'
-                    height='30px'>
+                    height='30px'
+                    width='calc(100% - 25px)'
+                    style={{ marginLeft: '25px' }}>
                     <Box>
                         <Typography color={'textPrimary'}>
                             Session ID:{' '}
@@ -72,9 +81,7 @@ export default class PresenterView extends React.Component<Props, State> {
                     justifyContent='center'
                     alignItems='center'
                     height='calc(100% - 80px)'
-                    width='calc(100% - 20px)'
-                    marginLeft='10px'
-                    marginRight='10px'>
+                    width='100%'>
                     <Box
                         display='flex'
                         flexDirection='row'
@@ -85,9 +92,38 @@ export default class PresenterView extends React.Component<Props, State> {
                             showSlideCount={true}
                             content={this.state.message.slide}
                         />
-                        <AttendeeList attendees={[]} socket={this.socket} />
+                        <Box
+                            display='flex'
+                            flexDirection='column'
+                            width='200px'
+                            height='100%'>
+                            <Box
+                                display='flex'
+                                width='100%'
+                                height='calc(100% - 40px)'>
+                                <AttendeeList
+                                    attendees={[]}
+                                    socket={this.socket}
+                                />
+                            </Box>
+                            <Box display='flex' width='100%' height='40px'>
+                                <Button
+                                    variant='text'
+                                    style={{ width: '100%' }}
+                                    onClick={this.togglePresentationStructure}>
+                                    Structure
+                                </Button>
+                            </Box>
+                        </Box>
                     </Box>
-                    <Box display='flex' flexDirection='row' width='100%'>
+                    <Box
+                        display={
+                            this.state.presentationStructureVisibility
+                                ? 'flex'
+                                : 'none'
+                        }
+                        flexDirection='row'
+                        width='100%'>
                         {this.state.presentationStructure !== undefined ? (
                             <PresentationStructureView
                                 onSlideClicked={
@@ -148,6 +184,13 @@ export default class PresenterView extends React.Component<Props, State> {
     private previousSlide = () => {
         this.socket.emit('request-slide-change', {
             slide: this.state.currentSlideIndex - 1
+        });
+    };
+
+    private togglePresentationStructure = () => {
+        this.setState({
+            presentationStructureVisibility: !this.state
+                .presentationStructureVisibility
         });
     };
 

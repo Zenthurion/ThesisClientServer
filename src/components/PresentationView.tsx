@@ -22,6 +22,9 @@ export const presentationTheme: Theme = createMuiTheme({
         type: 'light',
         primary: lime,
         secondary: orange
+    },
+    typography: {
+        body1: { fontSize: '1.2em' }
     }
 });
 

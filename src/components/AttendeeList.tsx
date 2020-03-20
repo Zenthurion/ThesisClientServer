@@ -35,7 +35,7 @@ export default class AttendeeList extends React.Component<Props, State> {
                 <TableContainer
                     component={Paper}
                     square={true}
-                    style={{ width: '200px', height: '100%' }}>
+                    style={{ minWidth: '200px', height: '100%' }}>
                     <Table size='small'>
                         <TableHead>
                             <TableCell>Attendees</TableCell>
