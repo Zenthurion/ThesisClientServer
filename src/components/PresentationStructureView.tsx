@@ -67,7 +67,7 @@ export default class PresentationStructureView extends React.Component<Props> {
                         minWidth: '200px',
                         minHeight: '80px'
                     }}>
-                    <Box>
+                    <Box overflow='ellipsis'>
                         <Typography variant='subtitle1'>
                             {index}.
                             {item.type === 'SlideCollection'
