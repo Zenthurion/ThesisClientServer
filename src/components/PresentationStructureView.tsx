@@ -97,14 +97,16 @@ export default class PresentationStructureView extends React.Component<Props> {
         item: IPresentationStructureSlide,
         index: number
     ) => {
-        if (item.type === 'collection')
+        if (item.type === 'SlideCollection')
             return (
-                <Typography variant='subtitle1'>{index}. Collection</Typography>
+                <Typography variant='subtitle1'>
+                    {index + 1}. Collection
+                </Typography>
             );
         else
             return (
                 <Typography variant='subtitle1'>
-                    {index}.{' '}
+                    {index + 1}.{' '}
                     {(item as IPresentationStructureContentSlide).title}
                 </Typography>
             );
