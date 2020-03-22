@@ -15,6 +15,12 @@ import OpenWithIcon from '@material-ui/icons/OpenWith';
 import BallotIcon from '@material-ui/icons/Ballot';
 import CallToActionIcon from '@material-ui/icons/CallToAction';
 import { mainTheme } from '../App';
+import {
+    IPresentationStructure,
+    IPresentationStructureContentSlide,
+    IPresentationStructureCollectionSlide,
+    IPresentationStructureSlide
+} from '../events/PresenterEvents';
 
 export interface StructureItem {
     type: string;
@@ -22,7 +28,7 @@ export interface StructureItem {
 }
 
 interface Props {
-    structure: StructureItem[];
+    structure: IPresentationStructure;
     direction?: string;
     currentSlideIndex: number;
     onSlideClicked: (index: number) => void;
@@ -46,7 +52,7 @@ export default class PresentationStructureView extends React.Component<Props> {
                     <Box
                         display='flex'
                         flexDirection={this.props.direction ?? 'row'}>
-                        {this.props.structure.map((item, index) =>
+                        {this.props.structure.slides.map((item, index) =>
                             this.renderCard(item, index)
                         )}
                     </Box>
@@ -55,7 +61,7 @@ export default class PresentationStructureView extends React.Component<Props> {
         );
     }
 
-    private renderCard = (item: StructureItem, index: number) => {
+    private renderCard = (item: IPresentationStructureSlide, index: number) => {
         return (
             <ThemeProvider key={index} theme={presentationTheme}>
                 <Card
@@ -68,12 +74,7 @@ export default class PresentationStructureView extends React.Component<Props> {
                         minHeight: '80px'
                     }}>
                     <Box overflow='ellipsis'>
-                        <Typography variant='subtitle1'>
-                            {index}.
-                            {item.type === 'SlideCollection'
-                                ? 'Collection'
-                                : item.title}
-                        </Typography>
+                        {this.renderContent(item, index)}
                         {this.renderIcon(item)}
                     </Box>
                     {index === this.props.currentSlideIndex ? (
@@ -92,7 +93,24 @@ export default class PresentationStructureView extends React.Component<Props> {
         );
     };
 
-    private renderIcon = (item: StructureItem) => {
+    private renderContent = (
+        item: IPresentationStructureSlide,
+        index: number
+    ) => {
+        if (item.type === 'collection')
+            return (
+                <Typography variant='subtitle1'>{index}. Collection</Typography>
+            );
+        else
+            return (
+                <Typography variant='subtitle1'>
+                    {index}.{' '}
+                    {(item as IPresentationStructureContentSlide).title}
+                </Typography>
+            );
+    };
+
+    private renderIcon = (item: IPresentationStructureSlide) => {
         switch (item.type) {
             case 'SlideCollection':
                 return <LayersIcon />;

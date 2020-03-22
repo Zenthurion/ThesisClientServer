@@ -14,6 +14,14 @@ import AttendeeList from './AttendeeList';
 import PresentationStructureView, {
     StructureItem
 } from './PresentationStructureView';
+import ClientEvents, { IPresentationContentData } from '../events/ClientEvents';
+import PresenterEvents, {
+    ISessionDataData,
+    INewSessionData,
+    IRequestNewSessionData,
+    IRequestSlideChangeData,
+    IPresentationStructure
+} from '../events/PresenterEvents';
 
 interface State {
     controller: string;
@@ -22,7 +30,7 @@ interface State {
     };
     sessionId: string;
     currentSlideIndex: number;
-    presentationStructure: StructureItem[];
+    presentationStructure: IPresentationStructure;
     presentationStructureVisibility: boolean;
     attendees: string[];
 }
@@ -47,7 +55,7 @@ export default class PresenterView extends React.Component<Props, State> {
             },
             sessionId: 'Loading Session ID',
             currentSlideIndex: 0,
-            presentationStructure: [],
+            presentationStructure: { slides: [] },
             presentationStructureVisibility: false,
             attendees: []
         };
@@ -178,19 +186,27 @@ export default class PresenterView extends React.Component<Props, State> {
     private renderAssignmentMode = () => {};
 
     private handlePresentationStructureSlideClicked = (index: number) => {
-        this.socket.emit('request-slide-change', { slide: index });
+        const slideRequest: IRequestSlideChangeData = {
+            slide: index
+        };
+
+        this.socket.emit(PresenterEvents.RequestSlideChange, slideRequest);
     };
 
     private nextSlide = () => {
-        this.socket.emit('request-slide-change', {
+        const slideRequest: IRequestSlideChangeData = {
             slide: this.state.currentSlideIndex + 1
-        });
+        };
+
+        this.socket.emit(PresenterEvents.RequestSlideChange, slideRequest);
     };
 
     private previousSlide = () => {
-        this.socket.emit('request-slide-change', {
+        const slideRequest: IRequestSlideChangeData = {
             slide: this.state.currentSlideIndex - 1
-        });
+        };
+
+        this.socket.emit(PresenterEvents.RequestSlideChange, slideRequest);
     };
 
     private togglePresentationStructure = () => {
@@ -201,26 +217,42 @@ export default class PresenterView extends React.Component<Props, State> {
     };
 
     componentDidMount(): void {
-        this.socket.emit(`presenter-connected`);
-        this.socket.emit(`request-new-session`, { presentationRef: '0' });
-        this.socket.once(`new-session-created`, (data: any) => {
-            this.setState({
-                sessionId: data.sessionId,
-                presentationStructure: data.presentationStructure
-            });
-        });
-        this.socket.on('emit-presentation-content', (json: any) => {
-            this.setState({
-                message: {
-                    slide: json.currentSlide
-                },
-                currentSlideIndex: parseInt(json.index, 10)
-            });
-        });
-        this.socket.on('session-data', (data: any) => {
-            this.setState({ attendees: data.attendees });
-            console.log(data);
-        });
+        this.socket.emit(PresenterEvents.PresenterConnected);
+
+        const presentationRequest: IRequestNewSessionData = {
+            presentationRef: '0'
+        };
+        this.socket.emit(
+            PresenterEvents.RequestNewSession,
+            presentationRequest
+        );
+        this.socket.once(
+            PresenterEvents.EmitNewSessionCreated,
+            (data: INewSessionData) => {
+                this.setState({
+                    sessionId: data.sessionId,
+                    presentationStructure: data.presentationStructure
+                });
+            }
+        );
+        this.socket.on(
+            ClientEvents.EmitPresentationContent,
+            (data: IPresentationContentData) => {
+                this.setState({
+                    message: {
+                        slide: data.currentSlide
+                    },
+                    currentSlideIndex: data.index
+                });
+            }
+        );
+        this.socket.on(
+            PresenterEvents.EmitSessionData,
+            (data: ISessionDataData) => {
+                this.setState({ attendees: data.attendees });
+                console.log(data);
+            }
+        );
     }
 
     componentWillUnmount(): void {

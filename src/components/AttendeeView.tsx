@@ -16,6 +16,12 @@ import {
 } from '@material-ui/core';
 import PresentationView from './PresentationView';
 import SlideContent from '../SlideContent';
+import AttendeeEvents, {
+    IValidateSessionIdData,
+    ISessionIdValidatedData,
+    IJoinSessionData
+} from '../events/AttendeeEvents';
+import ClientEvents, { IPresentationContentData } from '../events/ClientEvents';
 
 interface State {
     controller: string;
@@ -144,13 +150,15 @@ export default class AttendeeView extends React.Component<Props, State> {
     private validateAttemptedSessionId = () => {
         this.setState({ isValidating: true });
         console.log(this.state.attemptedSessionId);
-        this.socket
-            .emit(
-                'validate-session-id',
-                `{ "sessionId": "${this.state.attemptedSessionId}"}`
-            )
-            .on('session-id-validated', (json: any) => {
-                const data = JSON.parse(json);
+
+        const validateSessionData: IValidateSessionIdData = {
+            sessionId: this.state.attemptedSessionId ?? ''
+        };
+
+        this.socket.emit(AttendeeEvents.ValidateSessionId, validateSessionData);
+        this.socket.on(
+            AttendeeEvents.EmitSessionIdValidated,
+            (data: ISessionIdValidatedData) => {
                 if (
                     this.state.attemptedSessionId === data.sessionId &&
                     data.isValid
@@ -160,18 +168,19 @@ export default class AttendeeView extends React.Component<Props, State> {
                         isValidating: false
                     });
 
+                    const joinSessionData: IJoinSessionData = {
+                        sessionId: this.state.sessionId,
+                        username: 'No Name'
+                    };
                     this.socket.emit(
-                        'join-session',
-                        `{ "sessionId": "${this.state.sessionId}", "username": "No Name" }`
+                        AttendeeEvents.JoinSession,
+                        joinSessionData
                     );
+
                     this.socket.on(
-                        'emit-presentation-content',
-                        (contentJSON: any) =>
-                            this.handlePresentationContent(contentJSON)
-                    );
-                    this.socket.emit(
-                        'request-current-slide',
-                        `{ "sessionId": "${this.state.sessionId}" }`
+                        ClientEvents.EmitPresentationContent,
+                        (content: IPresentationContentData) =>
+                            this.handlePresentationContent(content)
                     );
                 } else {
                     this.setState({
@@ -180,20 +189,21 @@ export default class AttendeeView extends React.Component<Props, State> {
                         helperMessage: 'Invalid Session ID'
                     });
                 }
-            });
+            }
+        );
     };
 
-    private handlePresentationContent = (json: any) => {
+    private handlePresentationContent = (data: IPresentationContentData) => {
         this.setState({
             message: {
-                slide: json.currentSlide
+                slide: data.currentSlide
             },
-            currentSlideIndex: parseInt(json.index, 10)
+            currentSlideIndex: data.index
         });
     };
 
     componentDidMount(): void {
-        this.socket.emit('attendee-connected');
+        this.socket.emit(AttendeeEvents.AttendeeConnected);
         console.log('mounted');
     }
 

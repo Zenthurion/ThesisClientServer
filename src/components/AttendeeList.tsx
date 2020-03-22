@@ -31,10 +31,12 @@ export default class AttendeeList extends React.Component<Props> {
                     style={{ minWidth: '200px', height: '100%' }}>
                     <Table size='small'>
                         <TableHead>
-                            <TableCell>Attendees</TableCell>
+                            <TableRow>
+                                <TableCell>Attendees</TableCell>
+                            </TableRow>
                         </TableHead>
                         <TableBody>
-                            {this.state?.attendees?.map(attendee => (
+                            {this.props?.attendees?.map(attendee => (
                                 <TableRow key={attendee}>
                                     <TableCell variant='body'>
                                         {attendee}
