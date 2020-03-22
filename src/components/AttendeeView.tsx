@@ -22,6 +22,7 @@ import AttendeeEvents, {
     IJoinSessionData
 } from '../events/AttendeeEvents';
 import ClientEvents, { IPresentationContentData } from '../events/ClientEvents';
+import AttendeeJoinDialog from './AttendeeJoinDialog';
 
 interface State {
     controller: string;
@@ -30,10 +31,6 @@ interface State {
     };
     currentSlideIndex: number;
     sessionId: string;
-    attemptedSessionId?: string;
-    inputError: boolean;
-    isValidating: boolean;
-    helperMessage: string;
 }
 
 interface Props {
@@ -55,10 +52,7 @@ export default class AttendeeView extends React.Component<Props, State> {
                 }
             },
             currentSlideIndex: 0,
-            sessionId: '',
-            inputError: false,
-            isValidating: false,
-            helperMessage: "Format needs to be '123456' or '123-456'"
+            sessionId: ''
         };
         this.socket = SocketIOClient('http://localhost:3001');
     }
@@ -71,40 +65,12 @@ export default class AttendeeView extends React.Component<Props, State> {
                 flexDirection='column'
                 justifyContent='center'
                 alignItems='center'>
-                <Backdrop open={this.state.isValidating}>
-                    <CircularProgress />
-                </Backdrop>
-                <Dialog open={this.state.sessionId === ''}>
-                    <DialogTitle>Enter Session ID</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            Enter the provided session ID to view your
-                            presentation.
-                            <br /> E.g. 123-456.
-                        </DialogContentText>
-                        <TextField
-                            autoFocus
-                            fullWidth={true}
-                            id={'sessionId'}
-                            label={'Session ID'}
-                            type={'text'}
-                            helperText={this.state.helperMessage}
-                            onChange={this.handleSessionIdTextFieldChange}
-                            error={this.state.inputError}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button
-                            color={'primary'}
-                            type={'submit'}
-                            onClick={this.handleSessionIdOnClick}>
-                            Join
-                        </Button>
-                        <Button color={'secondary'} onClick={this.props.onBack}>
-                            Leave
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                <AttendeeJoinDialog
+                    open={this.state.sessionId === ''}
+                    socket={this.socket}
+                    onSessionIdValidated={this.handleSessionIdValidated}
+                    onBack={this.props.onBack}
+                />
                 <Box
                     display='flex'
                     justifyContent='center'
@@ -122,74 +88,21 @@ export default class AttendeeView extends React.Component<Props, State> {
         );
     }
 
-    private handleSessionIdOnClick = () => {
-        this.validateAttemptedSessionId();
-    };
+    private handleSessionIdValidated = (sessionId: string) => {
+        this.setState({
+            sessionId
+        });
 
-    private handleSessionIdTextFieldChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const input = event.target.value;
-        if (input.match('\\d{3}-\\d{3}')) {
-            this.setState({
-                inputError: false,
-                attemptedSessionId: input.replace('-', '')
-            });
-        } else if (input.match('\\d{6}')) {
-            this.setState({
-                inputError: false,
-                attemptedSessionId: input
-            });
-        } else {
-            this.setState({
-                helperMessage: "Format needs to be '123456' or '123-456'"
-            });
-        }
-    };
-
-    private validateAttemptedSessionId = () => {
-        this.setState({ isValidating: true });
-        console.log(this.state.attemptedSessionId);
-
-        const validateSessionData: IValidateSessionIdData = {
-            sessionId: this.state.attemptedSessionId ?? ''
+        const joinSessionData: IJoinSessionData = {
+            sessionId: this.state.sessionId,
+            username: 'No Name'
         };
+        this.socket.emit(AttendeeEvents.JoinSession, joinSessionData);
 
-        this.socket.emit(AttendeeEvents.ValidateSessionId, validateSessionData);
         this.socket.on(
-            AttendeeEvents.EmitSessionIdValidated,
-            (data: ISessionIdValidatedData) => {
-                if (
-                    this.state.attemptedSessionId === data.sessionId &&
-                    data.isValid
-                ) {
-                    this.setState({
-                        sessionId: this.state.attemptedSessionId!,
-                        isValidating: false
-                    });
-
-                    const joinSessionData: IJoinSessionData = {
-                        sessionId: this.state.sessionId,
-                        username: 'No Name'
-                    };
-                    this.socket.emit(
-                        AttendeeEvents.JoinSession,
-                        joinSessionData
-                    );
-
-                    this.socket.on(
-                        ClientEvents.EmitPresentationContent,
-                        (content: IPresentationContentData) =>
-                            this.handlePresentationContent(content)
-                    );
-                } else {
-                    this.setState({
-                        isValidating: false,
-                        inputError: true,
-                        helperMessage: 'Invalid Session ID'
-                    });
-                }
-            }
+            ClientEvents.EmitPresentationContent,
+            (content: IPresentationContentData) =>
+                this.handlePresentationContent(content)
         );
     };
 
