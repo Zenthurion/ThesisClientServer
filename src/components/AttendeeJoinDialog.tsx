@@ -24,7 +24,7 @@ interface State {
     helperMessage: string;
     attemptedSessionId?: string;
     name: string;
-    inputMode: string;
+    inputMode: View;
 }
 
 interface Props {
@@ -34,8 +34,10 @@ interface Props {
     onBack: () => void;
 }
 
-const inputUsername = 'input-username';
-const inputSessionId = 'input-session-id';
+enum View {
+    InputUsername,
+    inputSessionId
+}
 
 export default class AttendeeJoinDialog extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -45,7 +47,7 @@ export default class AttendeeJoinDialog extends React.Component<Props, State> {
             inputError: false,
             isValidating: false,
             helperMessage: "Format needs to be '123456' or '123-456'",
-            inputMode: inputUsername,
+            inputMode: View.InputUsername,
             name: ''
         };
     }
@@ -56,7 +58,7 @@ export default class AttendeeJoinDialog extends React.Component<Props, State> {
                 <Backdrop open={this.state.isValidating}>
                     <CircularProgress />
                 </Backdrop>
-                {this.state.inputMode === inputUsername
+                {this.state.inputMode === View.InputUsername
                     ? this.renderNameDialog()
                     : this.renderSessionIdDialog()}
             </Box>
@@ -124,7 +126,7 @@ export default class AttendeeJoinDialog extends React.Component<Props, State> {
                     <Button
                         color={'secondary'}
                         onClick={() => {
-                            this.setState({ inputMode: inputUsername });
+                            this.setState({ inputMode: View.InputUsername });
                         }}>
                         Back
                     </Button>
@@ -141,7 +143,7 @@ export default class AttendeeJoinDialog extends React.Component<Props, State> {
         if (name === undefined || name === '') return;
 
         this.setState({
-            inputMode: inputSessionId,
+            inputMode: View.inputSessionId,
             name
         });
     };
