@@ -14,19 +14,12 @@ import { presentationTheme } from './PresentationView';
 import { mainTheme } from '../App';
 
 interface Props {
-    socket: SocketIOClient.Socket;
     attendees: string[];
 }
 
-interface State {
-    attendees: string[];
-}
-
-export default class AttendeeList extends React.Component<Props, State> {
+export default class AttendeeList extends React.Component<Props> {
     constructor(props: Props) {
         super(props);
-
-        this.state = { attendees: props.attendees };
     }
 
     render() {
@@ -55,10 +48,5 @@ export default class AttendeeList extends React.Component<Props, State> {
         );
     }
 
-    componentDidMount() {
-        this.props.socket.on('session-data', (data: any) => {
-            this.setState({ attendees: data.attendees });
-            console.log(data);
-        });
-    }
+    componentDidMount() {}
 }

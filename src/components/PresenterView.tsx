@@ -24,6 +24,7 @@ interface State {
     currentSlideIndex: number;
     presentationStructure: StructureItem[];
     presentationStructureVisibility: boolean;
+    attendees: string[];
 }
 
 interface Props {
@@ -47,7 +48,8 @@ export default class PresenterView extends React.Component<Props, State> {
             sessionId: 'Loading Session ID',
             currentSlideIndex: 0,
             presentationStructure: [],
-            presentationStructureVisibility: false
+            presentationStructureVisibility: false,
+            attendees: []
         };
         this.socket = SocketIOClient('http://localhost:3001');
     }
@@ -102,8 +104,7 @@ export default class PresenterView extends React.Component<Props, State> {
                                 width='100%'
                                 height='calc(100% - 40px)'>
                                 <AttendeeList
-                                    attendees={[]}
-                                    socket={this.socket}
+                                    attendees={this.state.attendees}
                                 />
                             </Box>
                             <Box display='flex' width='100%' height='40px'>
@@ -171,6 +172,11 @@ export default class PresenterView extends React.Component<Props, State> {
             </Box>
         );
     };
+
+    private renderPresentationMode = () => {};
+
+    private renderAssignmentMode = () => {};
+
     private handlePresentationStructureSlideClicked = (index: number) => {
         this.socket.emit('request-slide-change', { slide: index });
     };
@@ -210,6 +216,10 @@ export default class PresenterView extends React.Component<Props, State> {
                 },
                 currentSlideIndex: parseInt(json.index, 10)
             });
+        });
+        this.socket.on('session-data', (data: any) => {
+            this.setState({ attendees: data.attendees });
+            console.log(data);
         });
     }
 
