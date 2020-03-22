@@ -23,14 +23,20 @@ interface State {
     isValidating: boolean;
     helperMessage: string;
     attemptedSessionId?: string;
+    name: string;
+    inputMode: string;
 }
 
 interface Props {
     open: boolean;
     socket: SocketIOClient.Socket;
-    onSessionIdValidated: (sessionId: string) => void;
+    onSessionIdValidated: (sessionId: string, username: string) => void;
     onBack: () => void;
 }
+
+const inputUsername = 'input-username';
+const inputSessionId = 'input-session-id';
+
 export default class AttendeeJoinDialog extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -38,49 +44,107 @@ export default class AttendeeJoinDialog extends React.Component<Props, State> {
         this.state = {
             inputError: false,
             isValidating: false,
-            helperMessage: "Format needs to be '123456' or '123-456'"
+            helperMessage: "Format needs to be '123456' or '123-456'",
+            inputMode: inputUsername,
+            name: ''
         };
     }
     render() {
+        if (!this.props.open) return '';
         return (
             <Box>
                 <Backdrop open={this.state.isValidating}>
                     <CircularProgress />
                 </Backdrop>
-                <Dialog open={this.props.open}>
-                    <DialogTitle>Enter Session ID</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            Enter the provided session ID to view your
-                            presentation.
-                            <br /> E.g. 123-456.
-                        </DialogContentText>
-                        <TextField
-                            autoFocus
-                            fullWidth={true}
-                            id={'sessionId'}
-                            label={'Session ID'}
-                            type={'text'}
-                            helperText={this.state.helperMessage}
-                            onChange={this.handleSessionIdTextFieldChange}
-                            error={this.state.inputError}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button
-                            color={'primary'}
-                            type={'submit'}
-                            onClick={this.handleSessionIdOnClick}>
-                            Join
-                        </Button>
-                        <Button color={'secondary'} onClick={this.props.onBack}>
-                            Leave
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                {this.state.inputMode === inputUsername
+                    ? this.renderNameDialog()
+                    : this.renderSessionIdDialog()}
             </Box>
         );
     }
+
+    private renderNameDialog = () => {
+        return (
+            <Dialog open id='name-dialog'>
+                <DialogTitle>Enter your name</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Please enter your name.
+                    </DialogContentText>
+                    <br />
+                    <TextField
+                        fullWidth={true}
+                        id={'name-field'}
+                        label={'Name'}
+                        type={'text'}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        color={'primary'}
+                        type={'submit'}
+                        onClick={this.handleNextDialog}>
+                        Next
+                    </Button>
+                    <Button color={'secondary'} onClick={this.props.onBack}>
+                        Leave
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    };
+
+    private renderSessionIdDialog = () => {
+        return (
+            <Dialog open id='session-id-dialog'>
+                <DialogTitle>Enter Session ID</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Enter the provided session ID to view your presentation.
+                        <br /> E.g. 123-456.
+                    </DialogContentText>
+                    <br />
+                    <TextField
+                        fullWidth={true}
+                        id={'sessionId'}
+                        label={'Session ID'}
+                        type={'text'}
+                        helperText={this.state.helperMessage}
+                        onChange={this.handleSessionIdTextFieldChange}
+                        error={this.state.inputError}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        color={'primary'}
+                        type={'submit'}
+                        onClick={this.handleSessionIdOnClick}>
+                        Join
+                    </Button>
+                    <Button
+                        color={'secondary'}
+                        onClick={() => {
+                            this.setState({ inputMode: inputUsername });
+                        }}>
+                        Back
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    };
+
+    private handleNextDialog = () => {
+        const name = (document.getElementById('name-field') as HTMLInputElement)
+            .value;
+
+        (document.getElementById('name-field') as HTMLInputElement).value = '';
+        if (name === undefined || name === '') return;
+
+        this.setState({
+            inputMode: inputSessionId,
+            name
+        });
+    };
 
     private handleSessionIdTextFieldChange = (
         event: React.ChangeEvent<HTMLInputElement>
@@ -127,7 +191,8 @@ export default class AttendeeJoinDialog extends React.Component<Props, State> {
                     data.isValid
                 ) {
                     this.props.onSessionIdValidated(
-                        this.state.attemptedSessionId!
+                        this.state.attemptedSessionId!,
+                        this.state.name
                     );
                     this.setState({
                         isValidating: false

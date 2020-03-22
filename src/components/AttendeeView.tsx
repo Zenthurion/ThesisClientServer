@@ -48,7 +48,7 @@ export default class AttendeeView extends React.Component<Props, State> {
             message: {
                 slide: {
                     type: 'PlainSlide',
-                    content: { title: 'Uninitialised', body: 'Uninitialised' }
+                    content: { title: '', body: '' }
                 }
             },
             currentSlideIndex: 0,
@@ -88,14 +88,17 @@ export default class AttendeeView extends React.Component<Props, State> {
         );
     }
 
-    private handleSessionIdValidated = (sessionId: string) => {
+    private handleSessionIdValidated = (
+        sessionId: string,
+        username: string
+    ) => {
         this.setState({
             sessionId
         });
 
         const joinSessionData: IJoinSessionData = {
-            sessionId: this.state.sessionId,
-            username: 'No Name'
+            sessionId,
+            username
         };
         this.socket.emit(AttendeeEvents.JoinSession, joinSessionData);
 
