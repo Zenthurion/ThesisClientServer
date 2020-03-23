@@ -27,16 +27,33 @@ export interface StructureItem {
     title: string;
 }
 
+export interface ISelectionResult {
+    valid: boolean;
+    text: string;
+}
+
 interface Props {
     structure: IPresentationStructure;
     direction?: string;
     currentSlideIndex: number;
-    onSlideClicked: (index: number) => void;
+    onSlideClicked: (
+        index: number,
+        slide: IPresentationStructureSlide
+    ) => ISelectionResult;
 }
 
-export default class PresentationStructureView extends React.Component<Props> {
+interface State {
+    selectedText: string;
+}
+
+export default class PresentationStructureView extends React.Component<
+    Props,
+    State
+> {
     constructor(props: Props) {
         super(props);
+
+        this.state = { selectedText: 'Selected' };
     }
 
     render() {
@@ -66,7 +83,7 @@ export default class PresentationStructureView extends React.Component<Props> {
             <ThemeProvider key={index} theme={presentationTheme}>
                 <Card
                     onClick={() => {
-                        this.props.onSlideClicked(index);
+                        this.handleSelection(index, item);
                     }}
                     style={{
                         margin: '5px',
@@ -82,7 +99,7 @@ export default class PresentationStructureView extends React.Component<Props> {
                             <Typography
                                 variant='subtitle2'
                                 style={{ color: 'red' }}>
-                                LIVE
+                                {this.state.selectedText}
                             </Typography>
                         </Box>
                     ) : (
@@ -125,5 +142,17 @@ export default class PresentationStructureView extends React.Component<Props> {
             case 'MultipleChoiceSlide':
                 return <BallotIcon />;
         }
+    };
+
+    private handleSelection = (
+        index: number,
+        item: IPresentationStructureSlide
+    ) => {
+        const result: ISelectionResult = this.props.onSlideClicked(index, item);
+        if (!result.valid) return;
+
+        this.setState({
+            selectedText: result.text
+        });
     };
 }
