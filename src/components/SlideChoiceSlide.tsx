@@ -1,6 +1,6 @@
 import React from 'react';
 import SlideContent from '../SlideContent';
-import { Grid, Typography, Button, Box } from '@material-ui/core';
+import { Grid, Typography, Button, Box, Divider } from '@material-ui/core';
 
 interface Props {
     controller: string;
@@ -24,6 +24,7 @@ export default class SlideChoiceSlideContent extends React.Component<Props> {
                         {this.props.slide.content.title}
                     </Typography>
                 </Box>
+                <Divider />
                 <Box
                     display='flex'
                     alignItems='center'

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Typography, Box, Container } from '@material-ui/core';
+import { Grid, Typography, Box, Container, Divider } from '@material-ui/core';
 import SlideContent from '../SlideContent';
 
 interface Props {
@@ -24,6 +24,7 @@ export default class PlainSlideContent extends React.Component<Props> {
                         {this.props.slide.content.title}
                     </Typography>
                 </Box>
+                <Divider />
                 <Box
                     display='flex'
                     alignItems='center'

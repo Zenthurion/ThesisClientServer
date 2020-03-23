@@ -1,5 +1,12 @@
 import React from 'react';
-import { Grid, Typography, TextField, Button, Box } from '@material-ui/core';
+import {
+    Grid,
+    Typography,
+    TextField,
+    Button,
+    Box,
+    Divider
+} from '@material-ui/core';
 import SlideContent from '../SlideContent';
 
 interface Props {
@@ -23,6 +30,7 @@ export default class MultipleChoiceSlideContent extends React.Component<Props> {
                         {this.props.slide.content.title}
                     </Typography>
                 </Box>
+                <Divider />
                 <Box
                     display='flex'
                     alignItems='center'
