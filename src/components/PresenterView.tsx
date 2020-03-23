@@ -12,7 +12,8 @@ import SocketIOClient from 'socket.io-client';
 import SlideContent from '../SlideContent';
 import AttendeeList from './AttendeeList';
 import PresentationStructureView, {
-    StructureItem
+    StructureItem,
+    ISelectionResult
 } from './PresentationStructureView';
 import ClientEvents, { IPresentationContentData } from '../events/ClientEvents';
 import PresenterEvents, {
@@ -20,8 +21,10 @@ import PresenterEvents, {
     INewSessionData,
     IRequestNewSessionData,
     IRequestSlideChangeData,
-    IPresentationStructure
+    IPresentationStructure,
+    IPresentationStructureSlide
 } from '../events/PresenterEvents';
+import SlideAssignment from './SlideAssignment';
 
 interface State {
     controller: string;
@@ -33,6 +36,12 @@ interface State {
     presentationStructure: IPresentationStructure;
     presentationStructureVisibility: boolean;
     attendees: string[];
+    view: View;
+}
+
+enum View {
+    Presentation,
+    Management
 }
 
 interface Props {
@@ -57,7 +66,8 @@ export default class PresenterView extends React.Component<Props, State> {
             currentSlideIndex: 0,
             presentationStructure: { slides: [] },
             presentationStructureVisibility: false,
-            attendees: []
+            attendees: [],
+            view: View.Presentation
         };
         this.socket = SocketIOClient('http://localhost:3001');
     }
@@ -73,6 +83,7 @@ export default class PresenterView extends React.Component<Props, State> {
                 alignItems='center'>
                 <Box
                     display='flex'
+                    alignItems='flex-end'
                     height='30px'
                     width='calc(100% - 25px)'
                     style={{ marginLeft: '25px' }}>
@@ -85,73 +96,16 @@ export default class PresenterView extends React.Component<Props, State> {
                         </Typography>
                     </Box>
                 </Box>
-                <Box
-                    display='flex'
-                    flexDirection='column'
-                    justifyContent='center'
-                    alignItems='center'
-                    height='calc(100% - 80px)'
-                    width='100%'>
-                    <Box
-                        display='flex'
-                        flexDirection='row'
-                        width='100%'
-                        height='100%'>
-                        <PresentationView
-                            controller={this.state.controller}
-                            showSlideCount={true}
-                            content={this.state.message.slide}
-                        />
-                        <Box
-                            display='flex'
-                            flexDirection='column'
-                            width='200px'
-                            height='100%'>
-                            <Box
-                                display='flex'
-                                width='100%'
-                                height='calc(100% - 40px)'>
-                                <AttendeeList
-                                    attendees={this.state.attendees}
-                                />
-                            </Box>
-                            <Box display='flex' width='100%' height='40px'>
-                                <Button
-                                    variant='text'
-                                    style={{ width: '100%' }}
-                                    onClick={this.togglePresentationStructure}>
-                                    Structure
-                                </Button>
-                            </Box>
-                        </Box>
-                    </Box>
-                    <Box
-                        display={
-                            this.state.presentationStructureVisibility
-                                ? 'flex'
-                                : 'none'
-                        }
-                        flexDirection='row'
-                        width='100%'>
-                        {this.state.presentationStructure !== undefined ? (
-                            <PresentationStructureView
-                                onSlideClicked={
-                                    this.handlePresentationStructureSlideClicked
-                                }
-                                structure={this.state.presentationStructure}
-                                currentSlideIndex={this.state.currentSlideIndex}
-                            />
-                        ) : (
-                            ''
-                        )}
-                    </Box>
-                </Box>
+                {this.state.view === View.Presentation
+                    ? this.renderPresentationMode()
+                    : this.renderAssignmentMode()}
+
                 <Box
                     display='flex'
                     justifyContent='center'
                     alignItems='center'
                     height='50px'
-                    width='90%'>
+                    width='100%'>
                     <Grid container justify='center' spacing={1}>
                         <Grid item>
                             <Box>
@@ -176,21 +130,127 @@ export default class PresenterView extends React.Component<Props, State> {
                             </Box>
                         </Grid>
                     </Grid>
+                    <Box
+                        display='flex'
+                        alignItems='flex-end'
+                        alignContent='flex-end'>
+                        <Button
+                            variant='contained'
+                            style={{ width: '200px' }}
+                            onClick={this.toggleView}>
+                            Manage
+                        </Button>
+                    </Box>
                 </Box>
             </Box>
         );
     };
 
-    private renderPresentationMode = () => {};
+    private toggleView = () => {
+        if (this.state.view === View.Presentation) {
+            this.setState({ view: View.Management });
+        } else if (this.state.view === View.Management) {
+            this.setState({ view: View.Presentation });
+        }
+    };
 
-    private renderAssignmentMode = () => {};
+    private renderPresentationMode = () => {
+        return (
+            <Box
+                display='flex'
+                flexDirection='column'
+                justifyContent='center'
+                alignItems='center'
+                height='calc(100% - 80px)'
+                width='100%'>
+                <Box
+                    display='flex'
+                    flexDirection='row'
+                    width='100%'
+                    height='100%'>
+                    <PresentationView
+                        controller={this.state.controller}
+                        showSlideCount={true}
+                        content={this.state.message.slide}
+                    />
+                    <Box
+                        display='flex'
+                        flexDirection='column'
+                        width='200px'
+                        height='100%'>
+                        <Box
+                            display='flex'
+                            width='100%'
+                            height='calc(100% - 40px)'>
+                            <AttendeeList attendees={this.state.attendees} />
+                        </Box>
+                        <Box display='flex' width='100%' height='40px'>
+                            <Button
+                                variant='text'
+                                style={{ width: '100%' }}
+                                onClick={this.togglePresentationStructure}>
+                                Structure
+                            </Button>
+                        </Box>
+                    </Box>
+                </Box>
+                <Box
+                    display={
+                        this.state.presentationStructureVisibility
+                            ? 'flex'
+                            : 'none'
+                    }
+                    flexDirection='row'
+                    width='100%'>
+                    {this.state.presentationStructure !== undefined ? (
+                        <PresentationStructureView
+                            onSlideClicked={
+                                this.handlePresentationStructureSlideClicked
+                            }
+                            structure={this.state.presentationStructure}
+                            currentSlideIndex={this.state.currentSlideIndex}
+                        />
+                    ) : (
+                        ''
+                    )}
+                </Box>
+            </Box>
+        );
+    };
 
-    private handlePresentationStructureSlideClicked = (index: number) => {
+    private renderAssignmentMode = () => {
+        return (
+            <Box
+                display='flex'
+                flexDirection='column'
+                justifyContent='center'
+                alignItems='center'
+                height='calc(100% - 80px)'
+                width='100%'>
+                <SlideAssignment
+                    attendees={this.state.attendees}
+                    presentation={this.state.presentationStructure}
+                />
+            </Box>
+        );
+    };
+
+    private handlePresentationStructureSlideClicked = (
+        index: number,
+        slide: IPresentationStructureSlide
+    ): ISelectionResult => {
         const slideRequest: IRequestSlideChangeData = {
             slide: index
         };
 
         this.socket.emit(PresenterEvents.RequestSlideChange, slideRequest);
+
+        const result: ISelectionResult = {
+            valid: true,
+            text: 'Live'
+        };
+
+        return result;
     };
 
     private nextSlide = () => {
