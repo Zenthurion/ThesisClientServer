@@ -22,7 +22,8 @@ import PresenterEvents, {
     IRequestNewSessionData,
     IRequestSlideChangeData,
     IPresentationStructure,
-    IPresentationStructureSlide
+    IPresentationStructureSlide,
+    IAttendeeData
 } from '../events/PresenterEvents';
 import SlideAssignment from './SlideAssignment';
 
@@ -35,7 +36,7 @@ interface State {
     currentSlideIndex: number;
     presentationStructure: IPresentationStructure;
     presentationStructureVisibility: boolean;
-    attendees: string[];
+    attendees: IAttendeeData[];
     view: View;
 }
 

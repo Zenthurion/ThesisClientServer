@@ -14,13 +14,14 @@ import {
     IPresentationStructure,
     IPresentationStructureSlide,
     IPresentationStructureCollectionSlide,
-    IPresentationStructureContentSlide
+    IPresentationStructureContentSlide,
+    IAttendeeData
 } from '../events/PresenterEvents';
 import { presentationTheme } from './PresentationView';
 import { typography } from '@material-ui/system';
 
 interface Props {
-    attendees: string[];
+    attendees: IAttendeeData[];
     presentation: IPresentationStructure;
 }
 
@@ -78,7 +79,7 @@ export default class SlideAssignment extends React.Component<Props, State> {
                 overflow='auto'>
                 {this.props.attendees.map(attendee => (
                     <Paper
-                        key={attendee}
+                        key={attendee.name}
                         style={{
                             margin: '3px'
                         }}>
@@ -88,7 +89,7 @@ export default class SlideAssignment extends React.Component<Props, State> {
                             display='flex'
                             alignContent='left'>
                             <Typography variant='subtitle1'>
-                                {attendee}
+                                {attendee.name}
                             </Typography>
                         </Box>
                     </Paper>

@@ -12,9 +12,10 @@ import {
 } from '@material-ui/core';
 import { presentationTheme } from './PresentationView';
 import { mainTheme } from '../App';
+import { IAttendeeData } from '../events/PresenterEvents';
 
 interface Props {
-    attendees: string[];
+    attendees: IAttendeeData[];
 }
 
 export default class AttendeeList extends React.Component<Props> {
@@ -37,9 +38,9 @@ export default class AttendeeList extends React.Component<Props> {
                         </TableHead>
                         <TableBody>
                             {this.props?.attendees?.map(attendee => (
-                                <TableRow key={attendee}>
+                                <TableRow key={attendee.name}>
                                     <TableCell variant='body'>
-                                        {attendee}
+                                        {attendee.name}
                                     </TableCell>
                                 </TableRow>
                             ))}
