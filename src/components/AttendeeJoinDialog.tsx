@@ -79,6 +79,7 @@ export default class AttendeeJoinDialog extends React.Component<Props, State> {
                         id={'name-field'}
                         label={'Name'}
                         type={'text'}
+                        autoFocus={true}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -114,6 +115,7 @@ export default class AttendeeJoinDialog extends React.Component<Props, State> {
                         helperText={this.state.helperMessage}
                         onChange={this.handleSessionIdTextFieldChange}
                         error={this.state.inputError}
+                        autoFocus={true}
                     />
                 </DialogContent>
                 <DialogActions>
