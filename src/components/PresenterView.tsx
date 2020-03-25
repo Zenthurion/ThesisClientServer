@@ -170,6 +170,8 @@ export default class PresenterView extends React.Component<Props, State> {
                     width='100%'
                     height='100%'>
                     <PresentationView
+                        socket={this.socket}
+                        slideIndex={this.state.currentSlideIndex}
                         controller={this.state.controller}
                         showSlideCount={true}
                         content={this.state.message.slide}

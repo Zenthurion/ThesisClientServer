@@ -79,6 +79,8 @@ export default class AttendeeView extends React.Component<Props, State> {
                     width='100%'
                     margin='10px'>
                     <PresentationView
+                        socket={this.socket}
+                        slideIndex={this.state.currentSlideIndex}
                         controller={this.state.controller}
                         showSlideCount={true}
                         content={this.state.message.slide}
@@ -120,7 +122,6 @@ export default class AttendeeView extends React.Component<Props, State> {
 
     componentDidMount(): void {
         this.socket.emit(AttendeeEvents.AttendeeConnected);
-        console.log('mounted');
     }
 
     componentWillUnmount(): void {

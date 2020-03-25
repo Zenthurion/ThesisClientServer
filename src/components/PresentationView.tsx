@@ -33,6 +33,8 @@ interface Props {
     onClick?: () => void;
     showSlideCount: boolean;
     content: SlideContent;
+    slideIndex: number;
+    socket: SocketIOClient.Socket;
 }
 
 interface State {}
@@ -86,6 +88,8 @@ export default class PresentationView extends React.Component<Props, State> {
             case 'SlideChoiceSlide':
                 return (
                     <SlideChoiceSlideContent
+                        socket={this.props.socket}
+                        slideIndex={this.props.slideIndex}
                         controller={this.props.controller}
                         slide={this.props.content}></SlideChoiceSlideContent>
                 );

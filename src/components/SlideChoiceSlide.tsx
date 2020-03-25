@@ -1,10 +1,14 @@
 import React from 'react';
 import SlideContent from '../SlideContent';
 import { Grid, Typography, Button, Box, Divider } from '@material-ui/core';
+import { Socket } from 'dgram';
+import ClientEvents, { IAssignContentData } from '../events/ClientEvents';
 
 interface Props {
+    socket: SocketIOClient.Socket;
     controller: string;
     slide: SlideContent;
+    slideIndex: number;
 }
 
 export default class SlideChoiceSlideContent extends React.Component<Props> {
@@ -47,7 +51,8 @@ export default class SlideChoiceSlideContent extends React.Component<Props> {
                             disabled={
                                 this.props.controller !==
                                 this.props.slide.content.controller
-                            }>
+                            }
+                            onClick={() => this.assignToSlide(i)}>
                             {text}
                         </Button>
                     ))}
@@ -55,4 +60,12 @@ export default class SlideChoiceSlideContent extends React.Component<Props> {
             </Box>
         );
     }
+
+    private assignToSlide = (index: number) => {
+        const assignmentData: IAssignContentData = {
+            slideIndex: this.props.slideIndex + 1,
+            subIndex: index
+        };
+        this.props.socket.emit(ClientEvents.AssignContent, assignmentData);
+    };
 }
