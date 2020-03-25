@@ -229,11 +229,20 @@ export default class PresenterView extends React.Component<Props, State> {
                 height='calc(100% - 80px)'
                 width='100%'>
                 <SlideAssignment
+                    socket={this.socket}
                     attendees={this.state.attendees}
                     presentation={this.state.presentationStructure}
+                    updateAttendee={this.handleAttendeeUpdate}
                 />
             </Box>
         );
+    };
+
+    private handleAttendeeUpdate = (attendee: IAttendeeData) => {
+        const attendees = this.state.attendees;
+        const index = attendees.indexOf(attendee);
+        attendees[index] = attendee;
+        this.setState({ attendees });
     };
 
     private handlePresentationStructureSlideClicked = (
@@ -311,7 +320,6 @@ export default class PresenterView extends React.Component<Props, State> {
             PresenterEvents.EmitSessionData,
             (data: ISessionDataData) => {
                 this.setState({ attendees: data.attendees });
-                console.log(data);
             }
         );
     }

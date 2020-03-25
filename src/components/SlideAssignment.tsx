@@ -10,7 +10,7 @@ import {
 import PresentationStructureView, {
     ISelectionResult
 } from './PresentationStructureView';
-import {
+import PresenterEvents, {
     IPresentationStructure,
     IPresentationStructureSlide,
     IPresentationStructureCollectionSlide,
@@ -19,10 +19,23 @@ import {
 } from '../events/PresenterEvents';
 import { presentationTheme } from './PresentationView';
 import { typography } from '@material-ui/system';
+import {
+    DragDropContext,
+    Droppable,
+    Draggable,
+    DropResult,
+    ResponderProvided
+} from 'react-beautiful-dnd';
+import AssignmentAttendeePanel from './AssignmentAttendeePanel';
+import AssignmentSlidesPanel from './AssignmentSlidesPanel';
+import { Socket } from 'net';
+import { IAssignContentData } from '../events/ClientEvents';
 
 interface Props {
     attendees: IAttendeeData[];
     presentation: IPresentationStructure;
+    socket: SocketIOClient.Socket;
+    updateAttendee: (attendee: IAttendeeData) => void;
 }
 
 interface State {
@@ -48,8 +61,17 @@ export default class SlideAssignment extends React.Component<Props, State> {
                     flexDirection='column'>
                     <Paper style={{ width: '100%', height: '100%' }} square>
                         <ThemeProvider theme={presentationTheme}>
-                            {this.renderAttendeePanel()}
-                            {this.renderAssignmentPanel()}
+                            <DragDropContext onDragEnd={this.handleOnDragEnd}>
+                                <AssignmentAttendeePanel
+                                    selectedSlide={this.state.selectedSlide}
+                                    attendees={this.props.attendees}
+                                />
+                                <AssignmentSlidesPanel
+                                    slideIndex={this.state.selectedSlide}
+                                    collection={this.getSelectedCollection()}
+                                    attendees={this.props.attendees}
+                                />
+                            </DragDropContext>
                         </ThemeProvider>
                     </Paper>
                 </Box>
@@ -69,36 +91,7 @@ export default class SlideAssignment extends React.Component<Props, State> {
         );
     }
 
-    private renderAttendeePanel = () => {
-        return (
-            <Box
-                width='100%'
-                height='35%'
-                display='flex'
-                flexDirection='row'
-                overflow='auto'>
-                {this.props.attendees.map(attendee => (
-                    <Paper
-                        key={attendee.name}
-                        style={{
-                            margin: '3px'
-                        }}>
-                        <Box
-                            padding='5px'
-                            width='100px'
-                            display='flex'
-                            alignContent='left'>
-                            <Typography variant='subtitle1'>
-                                {attendee.name}
-                            </Typography>
-                        </Box>
-                    </Paper>
-                ))}
-            </Box>
-        );
-    };
-
-    private renderAssignmentPanel = () => {
+    private getSelectedCollection = (): IPresentationStructureCollectionSlide => {
         const collection = this.props.presentation.slides[
             this.state.selectedSlide
         ] as IPresentationStructureCollectionSlide;
@@ -111,89 +104,8 @@ export default class SlideAssignment extends React.Component<Props, State> {
                 selectedSlide: this.getFirstSlideCollectionIndex()
             });
         }
-        return (
-            <Box
-                width='100%'
-                height='65%'
-                display='flex'
-                flexDirection='row'
-                alignItems='center'
-                justifyContent='center'
-                overflow='auto'>
-                {(collection as IPresentationStructureCollectionSlide).slides.map(
-                    (slide, index) => {
-                        return this.renderSlideAssignment(slide, index);
-                    }
-                )}
-            </Box>
-        );
-    };
 
-    private renderSlideAssignment = (
-        slide: IPresentationStructureContentSlide,
-        index: number
-    ) => {
-        return (
-            <Box
-                key={index}
-                minWidth='300px'
-                height='calc(100% - 10px)'
-                padding='5px'
-                display='flex'
-                flexDirection='column'>
-                <Paper style={{ width: '100%', height: '70%' }}>
-                    <Typography variant='subtitle1'>Assigned</Typography>
-                    <Divider />
-                </Paper>
-                <Divider />
-                <Paper style={{ width: '100%', height: '30%' }}>
-                    <Box
-                        width='100%'
-                        height='100%'
-                        justifyContent='center'
-                        alignItems='center'>
-                        <Box width='100%' height='30px'>
-                            <Typography variant='subtitle1'>
-                                {slide.title}
-                            </Typography>
-                            <Divider />
-                        </Box>
-                        <Box
-                            width='100%'
-                            height='calc(100% - 30px)'
-                            alignItems='center'
-                            justifyContent='center'>
-                            <Typography variant='subtitle2'>
-                                {slide.body}
-                            </Typography>
-                            {this.renderSlideType(slide)}
-                        </Box>
-                    </Box>
-                </Paper>
-            </Box>
-        );
-    };
-
-    private renderSlideType = (slide: IPresentationStructureSlide) => {
-        switch (slide.type) {
-            case 'PlainContent':
-                return <Typography variant='subtitle1'></Typography>;
-            case 'MultipleChoiceSlide':
-                return (
-                    <Typography variant='subtitle1'>
-                        [Multiple Choice]
-                    </Typography>
-                );
-            case 'TextAnswerSlide':
-                return (
-                    <Typography variant='subtitle1'>[Text Answer]</Typography>
-                );
-            default:
-                console.log(
-                    'A slide of this type should not appear here! ' + slide.type
-                );
-        }
-        return '';
+        return collection;
     };
 
     private handleSlideStructureSelection = (
@@ -214,9 +126,49 @@ export default class SlideAssignment extends React.Component<Props, State> {
         return result;
     };
 
+    private handleOnDragEnd = (
+        result: DropResult,
+        provided: ResponderProvided
+    ) => {
+        if (
+            !result.destination ||
+            result.source.droppableId === result.destination.droppableId
+        )
+            return;
+
+        const attendee = this.props.attendees.find(
+            a => result.draggableId === a.name
+        );
+
+        if (!attendee) return;
+
+        this.assignAttendee(attendee, result.destination.droppableId);
+    };
+
     private getFirstSlideCollectionIndex = (): number => {
         return this.props.presentation.slides.findIndex(slide => {
             return slide.type === 'SlideCollection';
         });
+    };
+
+    private assignAttendee = (attendee: IAttendeeData, target: string) => {
+        let assignData: IAssignContentData;
+        if (target === 'attendeeDrop') {
+            assignData = {
+                slideIndex: this.state.selectedSlide,
+                subIndex: -1,
+                target: [attendee.name]
+            };
+        } else {
+            assignData = {
+                slideIndex: this.state.selectedSlide,
+                subIndex: parseInt(target, 10),
+                target: [attendee.name]
+            };
+        }
+        attendee.assignments[assignData.slideIndex] = assignData.subIndex;
+
+        this.props.updateAttendee(attendee);
+        this.props.socket.emit(PresenterEvents.AssignContent, assignData);
     };
 }
