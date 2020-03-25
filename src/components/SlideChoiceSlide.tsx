@@ -3,6 +3,9 @@ import SlideContent from '../SlideContent';
 import { Grid, Typography, Button, Box, Divider } from '@material-ui/core';
 import { Socket } from 'dgram';
 import ClientEvents, { IAssignContentData } from '../events/ClientEvents';
+import PresenterEvents, {
+    IRequestSlideChangeData
+} from '../events/PresenterEvents';
 
 interface Props {
     socket: SocketIOClient.Socket;
@@ -67,5 +70,15 @@ export default class SlideChoiceSlideContent extends React.Component<Props> {
             subIndex: index
         };
         this.props.socket.emit(ClientEvents.AssignContent, assignmentData);
+
+        if (this.props.controller === 'presenter') {
+            const slideChangeData: IRequestSlideChangeData = {
+                slide: this.props.slideIndex + 1
+            };
+            this.props.socket.emit(
+                PresenterEvents.RequestSlideChange,
+                slideChangeData
+            );
+        }
     };
 }
