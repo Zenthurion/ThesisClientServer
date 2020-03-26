@@ -139,7 +139,9 @@ export default class PresenterView extends React.Component<Props, State> {
                             variant='contained'
                             style={{ width: '200px' }}
                             onClick={this.toggleView}>
-                            Manage
+                            {this.state.view === View.Presentation
+                                ? 'Manage'
+                                : 'Present'}
                         </Button>
                     </Box>
                 </Box>
