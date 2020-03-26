@@ -76,12 +76,14 @@ export default class PresentationView extends React.Component<Props, State> {
             case 'MultipleChoiceSlide':
                 return (
                     <MultipleChoiceSlideContent
+                        socket={this.props.socket}
                         controller={this.props.controller}
                         slide={this.props.content}></MultipleChoiceSlideContent>
                 );
             case 'TextAnswerSlide':
                 return (
                     <TextAnswerSlideContent
+                        socket={this.props.socket}
                         controller={this.props.controller}
                         slide={this.props.content}></TextAnswerSlideContent>
                 );

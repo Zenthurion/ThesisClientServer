@@ -3,8 +3,7 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    Backdrop,
-    Box
+    Backdrop
 } from '@material-ui/core';
 
 interface Props {

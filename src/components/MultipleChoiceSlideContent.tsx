@@ -1,26 +1,24 @@
 import React from 'react';
-import {
-    Grid,
-    Typography,
-    TextField,
-    Button,
-    Box,
-    Divider
-} from '@material-ui/core';
-import SlideContent from '../SlideContent';
+import { Typography, Button, Box, Divider } from '@material-ui/core';
+import ExerciseResult from './ExerciseResult';
+import ExerciseSlideContent, {
+    ExerciseProps,
+    ExerciseState
+} from './ExerciseSlideContent';
 
-interface Props {
-    controller: string;
-    slide: SlideContent;
-}
-export default class MultipleChoiceSlideContent extends React.Component<Props> {
-    constructor(props: Props) {
+export default class MultipleChoiceSlideContent extends ExerciseSlideContent {
+    constructor(props: ExerciseProps) {
         super(props);
     }
 
     render() {
         return (
             <Box paddingLeft='20px' paddingRight='20px' height='100%'>
+                <ExerciseResult
+                    open={this.state.answer !== ''}
+                    answer={this.state.answer}
+                    validation={this.props.slide.content.validation}
+                />
                 <Box
                     display='flex'
                     justifyContent='center'
@@ -50,6 +48,7 @@ export default class MultipleChoiceSlideContent extends React.Component<Props> {
                             variant={'contained'}
                             color={'secondary'}
                             key={i}
+                            onClick={() => this.handleChoice(i)}
                             disabled={
                                 this.props.controller !==
                                 this.props.slide.content.controller
@@ -72,6 +71,7 @@ export default class MultipleChoiceSlideContent extends React.Component<Props> {
                 <Button
                     variant={'contained'}
                     color={'primary'}
+                    onClick={this.handleSubmit}
                     disabled={
                         this.props.controller !==
                         this.props.slide.content.controller
@@ -80,5 +80,9 @@ export default class MultipleChoiceSlideContent extends React.Component<Props> {
                 </Button>
             </Box>
         );
+    };
+
+    private handleChoice = (index: number) => {
+        this.setState({ current: index.toString() });
     };
 }

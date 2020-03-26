@@ -1,27 +1,20 @@
-import React from 'react';
-import {
-    Grid,
-    Typography,
-    Button,
-    TextField,
-    Box,
-    Divider
-} from '@material-ui/core';
-import SlideContent from '../SlideContent';
+import React, { ChangeEvent } from 'react';
+import { Typography, Button, TextField, Box, Divider } from '@material-ui/core';
+import ExerciseSlideContent, {
+    ExerciseProps,
+    ExerciseState
+} from './ExerciseSlideContent';
+import ExerciseResult from './ExerciseResult';
 
-interface Props {
-    controller: string;
-    slide: SlideContent;
-}
-
-export default class TextAnswerSlideContent extends React.Component<Props> {
-    constructor(props: Props) {
-        super(props);
-    }
-
+export default class TextAnswerSlideContent extends ExerciseSlideContent {
     render() {
         return (
             <Box paddingLeft='20px' paddingRight='20px' height='100%'>
+                <ExerciseResult
+                    open={this.state.answer !== ''}
+                    answer={this.state.answer}
+                    validation={this.props.slide.content.validation}
+                />
                 <Box
                     display='flex'
                     justifyContent='center'
@@ -62,6 +55,7 @@ export default class TextAnswerSlideContent extends React.Component<Props> {
                         variant='outlined'
                         rows='4'
                         rowsMax='8'
+                        onChange={this.handleTextInputChange}
                         disabled={
                             this.props.controller !==
                             this.props.slide.content.controller
@@ -69,6 +63,11 @@ export default class TextAnswerSlideContent extends React.Component<Props> {
                 </Box>
             );
         }
+    };
+    private handleTextInputChange = (
+        event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        this.setState({ current: event.target.value });
     };
 
     private renderSubmit = () => {
@@ -80,6 +79,7 @@ export default class TextAnswerSlideContent extends React.Component<Props> {
                     <Button
                         variant={'contained'}
                         color={'primary'}
+                        onClick={this.handleSubmit}
                         disabled={
                             this.props.controller !==
                             this.props.slide.content.controller
