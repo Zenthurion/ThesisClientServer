@@ -66,6 +66,10 @@ export default class PresentationView extends React.Component<Props, State> {
     }
 
     private renderContent = () => {
+        if (!this.props.content) {
+            console.log(this.props);
+            return '';
+        }
         switch (this.props.content.type) {
             case 'PlainSlide':
                 return (

@@ -54,8 +54,8 @@ export default class AttendeeView extends React.Component<Props, State> {
             currentSlideIndex: 0,
             sessionId: ''
         };
-        const backendIp = process.env.BACKEND_IP ?? 'localhost';
-        const backendPort = process.env.BACKEND_PORT ?? '3001';
+        const backendIp = process.env.REACT_APP_BACKEND_IP ?? 'localhost';
+        const backendPort = process.env.REACT_APP_BACKEND_PORT ?? '3001';
         this.socket = SocketIOClient(backendIp + ':' + backendPort);
     }
     render() {

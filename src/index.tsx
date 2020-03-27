@@ -9,9 +9,6 @@ import ReactDOM from 'react-dom';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { config as configureDotenv } from 'dotenv';
-
-configureDotenv();
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
