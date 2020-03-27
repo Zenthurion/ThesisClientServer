@@ -13,6 +13,7 @@
     "@types/react-beautiful-dnd": "^12.1.2",
     "@types/react-dom": "^16.9.5",
     "bufferutil": "^4.0.1",
+    "dotenv": "^8.2.0",
     "eslint-plugin-flowtype": "^3.0.0",
     "react": "^16.13.0",
     "react-beautiful-dnd": "^13.0.0",

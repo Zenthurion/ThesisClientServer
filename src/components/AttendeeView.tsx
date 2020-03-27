@@ -23,6 +23,7 @@ import AttendeeEvents, {
 } from '../events/AttendeeEvents';
 import ClientEvents, { IPresentationContentData } from '../events/ClientEvents';
 import AttendeeJoinDialog from './AttendeeJoinDialog';
+import { config as configureDotenv } from 'dotenv';
 
 interface State {
     controller: string;
@@ -54,7 +55,9 @@ export default class AttendeeView extends React.Component<Props, State> {
             currentSlideIndex: 0,
             sessionId: ''
         };
-        this.socket = SocketIOClient('http://localhost:3001');
+        const backendIp = process.env.BACKEND_IP ?? 'localhost';
+        const backendPort = process.env.BACKEND_PORT ?? '3001';
+        this.socket = SocketIOClient(backendIp + ':' + backendPort);
     }
     render() {
         return (

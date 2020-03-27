@@ -26,6 +26,7 @@ import PresenterEvents, {
     IAttendeeData
 } from '../events/PresenterEvents';
 import SlideAssignment from './SlideAssignment';
+import { config as configureDotenv } from 'dotenv';
 
 interface State {
     controller: string;
