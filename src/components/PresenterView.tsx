@@ -26,7 +26,6 @@ import PresenterEvents, {
     IAttendeeData
 } from '../events/PresenterEvents';
 import SlideAssignment from './SlideAssignment';
-import { config as configureDotenv } from 'dotenv';
 
 interface State {
     controller: string;
@@ -55,7 +54,6 @@ export default class PresenterView extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        configureDotenv();
 
         this.state = {
             controller: 'presenter',
