@@ -55,6 +55,7 @@ export default class PresenterView extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
+        configureDotenv();
 
         this.state = {
             controller: 'presenter',
@@ -71,7 +72,9 @@ export default class PresenterView extends React.Component<Props, State> {
             attendees: [],
             view: View.Presentation
         };
-        this.socket = SocketIOClient('http://localhost:3001');
+        const backendIp = process.env.BACKEND_IP ?? 'localhost';
+        const backendPort = process.env.BACKEND_PORT ?? '3001';
+        this.socket = SocketIOClient(backendIp + ':' + backendPort);
     }
 
     render = () => {

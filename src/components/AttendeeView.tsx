@@ -43,6 +43,7 @@ export default class AttendeeView extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
+        configureDotenv();
 
         this.state = {
             controller: 'attendee',
