@@ -1,7 +1,6 @@
 import React from 'react';
 import SlideContent from '../SlideContent';
-import { Grid, Typography, Button, Box, Divider } from '@material-ui/core';
-import { Socket } from 'dgram';
+import { Typography, Button, Box, Divider } from '@material-ui/core';
 import ClientEvents, { IAssignContentData } from '../events/ClientEvents';
 import PresenterEvents, {
     IRequestSlideChangeData
@@ -15,10 +14,6 @@ interface Props {
 }
 
 export default class SlideChoiceSlideContent extends React.Component<Props> {
-    constructor(props: Props) {
-        super(props);
-    }
-
     render() {
         return (
             <Box paddingLeft='20px' paddingRight='20px' height='100%'>

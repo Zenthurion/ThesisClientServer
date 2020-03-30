@@ -9,7 +9,7 @@ import PresenterView from './components/PresenterView';
 import AttendeeView from './components/AttendeeView';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import { blueGrey, grey, lime, orange } from '@material-ui/core/colors';
+import { grey, lime, orange } from '@material-ui/core/colors';
 
 enum Page {
     Login,

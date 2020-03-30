@@ -13,10 +13,8 @@ import {
 } from '@material-ui/core';
 import AttendeeEvents, {
     IValidateSessionIdData,
-    ISessionIdValidatedData,
-    IJoinSessionData
+    ISessionIdValidatedData
 } from '../events/AttendeeEvents';
-import ClientEvents, { IPresentationContentData } from '../events/ClientEvents';
 
 interface State {
     inputError: boolean;

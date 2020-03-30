@@ -1,16 +1,7 @@
 import React from 'react';
-import {
-    Container,
-    createMuiTheme,
-    Grid,
-    Paper,
-    ThemeProvider,
-    Typography,
-    Box
-} from '@material-ui/core';
+import { createMuiTheme, Paper, ThemeProvider } from '@material-ui/core';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { lime, orange } from '@material-ui/core/colors';
-import { GridDirection } from '@material-ui/core/Grid/Grid';
 import PlainSlideContent from './PlainSlideContent';
 import MultipleChoiceSlideContent from './MultipleChoiceSlideContent';
 import TextAnswerSlideContent from './TextAnswerSlideContent';
@@ -37,12 +28,7 @@ interface Props {
     socket: SocketIOClient.Socket;
 }
 
-interface State {}
-
-export default class PresentationView extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-    }
+export default class PresentationView extends React.Component<Props> {
     render() {
         return (
             <Paper

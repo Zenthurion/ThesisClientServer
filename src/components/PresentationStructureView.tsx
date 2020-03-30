@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-    ThemeProvider,
-    Paper,
-    Box,
-    Card,
-    CardHeader,
-    Icon,
-    Typography
-} from '@material-ui/core';
+import { ThemeProvider, Paper, Box, Card, Typography } from '@material-ui/core';
 import { presentationTheme } from './PresentationView';
 import LayersIcon from '@material-ui/icons/Layers';
 import FontDownloadIcon from '@material-ui/icons/FontDownload';
@@ -18,7 +10,6 @@ import { mainTheme } from '../App';
 import {
     IPresentationStructure,
     IPresentationStructureContentSlide,
-    IPresentationStructureCollectionSlide,
     IPresentationStructureSlide
 } from '../events/PresenterEvents';
 

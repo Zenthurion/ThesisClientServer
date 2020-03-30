@@ -1,6 +1,6 @@
 import React from 'react';
-import { Droppable, Draggable } from 'react-beautiful-dnd';
-import { Paper, Box, Typography } from '@material-ui/core';
+import { Droppable } from 'react-beautiful-dnd';
+import { Paper, Box } from '@material-ui/core';
 import { IAttendeeData } from '../events/PresenterEvents';
 import AssignmentAttendee from './AssignmentAttendee';
 

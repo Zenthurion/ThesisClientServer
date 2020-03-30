@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Typography, Box, Container, Divider } from '@material-ui/core';
+import { Typography, Box, Divider } from '@material-ui/core';
 import SlideContent from '../SlideContent';
 
 interface Props {
@@ -8,10 +8,6 @@ interface Props {
 }
 
 export default class PlainSlideContent extends React.Component<Props> {
-    constructor(props: Props) {
-        super(props);
-    }
-
     render() {
         return (
             <Box paddingLeft='20px' paddingRight='20px' height='100%'>

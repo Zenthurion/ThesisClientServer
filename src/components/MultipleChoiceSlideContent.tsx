@@ -1,16 +1,9 @@
 import React from 'react';
 import { Typography, Button, Box, Divider } from '@material-ui/core';
 import ExerciseResult from './ExerciseResult';
-import ExerciseSlideContent, {
-    ExerciseProps,
-    ExerciseState
-} from './ExerciseSlideContent';
+import ExerciseSlideContent from './ExerciseSlideContent';
 
 export default class MultipleChoiceSlideContent extends ExerciseSlideContent {
-    constructor(props: ExerciseProps) {
-        super(props);
-    }
-
     render() {
         return (
             <Box paddingLeft='20px' paddingRight='20px' height='100%'>

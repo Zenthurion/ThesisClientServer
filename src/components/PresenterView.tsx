@@ -1,18 +1,10 @@
 import React from 'react';
-import {
-    Button,
-    Grid,
-    Typography,
-    Box,
-    Container,
-    Drawer
-} from '@material-ui/core';
+import { Button, Grid, Typography, Box } from '@material-ui/core';
 import PresentationView from './PresentationView';
 import SocketIOClient from 'socket.io-client';
 import SlideContent from '../SlideContent';
 import AttendeeList from './AttendeeList';
 import PresentationStructureView, {
-    StructureItem,
     ISelectionResult
 } from './PresentationStructureView';
 import ClientEvents, { IPresentationContentData } from '../events/ClientEvents';

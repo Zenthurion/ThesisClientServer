@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-    Box,
-    Paper,
-    Card,
-    ThemeProvider,
-    Typography,
-    Divider
-} from '@material-ui/core';
+import { Box, Paper, ThemeProvider } from '@material-ui/core';
 import PresentationStructureView, {
     ISelectionResult
 } from './PresentationStructureView';
@@ -14,21 +7,16 @@ import PresenterEvents, {
     IPresentationStructure,
     IPresentationStructureSlide,
     IPresentationStructureCollectionSlide,
-    IPresentationStructureContentSlide,
     IAttendeeData
 } from '../events/PresenterEvents';
 import { presentationTheme } from './PresentationView';
-import { typography } from '@material-ui/system';
 import {
     DragDropContext,
-    Droppable,
-    Draggable,
     DropResult,
     ResponderProvided
 } from 'react-beautiful-dnd';
 import AssignmentAttendeePanel from './AssignmentAttendeePanel';
 import AssignmentSlidesPanel from './AssignmentSlidesPanel';
-import { Socket } from 'net';
 import { IAssignContentData } from '../events/ClientEvents';
 
 interface Props {

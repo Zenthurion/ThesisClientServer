@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    Box,
     ThemeProvider,
     Paper,
     Table,
@@ -10,7 +9,6 @@ import {
     TableBody,
     TableRow
 } from '@material-ui/core';
-import { presentationTheme } from './PresentationView';
 import { mainTheme } from '../App';
 import { IAttendeeData } from '../events/PresenterEvents';
 
@@ -19,10 +17,6 @@ interface Props {
 }
 
 export default class AttendeeList extends React.Component<Props> {
-    constructor(props: Props) {
-        super(props);
-    }
-
     render() {
         return (
             <ThemeProvider theme={mainTheme}>

@@ -1,26 +1,9 @@
 import React from 'react';
 import SocketIOClient from 'socket.io-client';
-import {
-    Backdrop,
-    Button,
-    CircularProgress,
-    Container,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Grid,
-    TextField,
-    Box
-} from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import PresentationView from './PresentationView';
 import SlideContent from '../SlideContent';
-import AttendeeEvents, {
-    IValidateSessionIdData,
-    ISessionIdValidatedData,
-    IJoinSessionData
-} from '../events/AttendeeEvents';
+import AttendeeEvents, { IJoinSessionData } from '../events/AttendeeEvents';
 import ClientEvents, { IPresentationContentData } from '../events/ClientEvents';
 import AttendeeJoinDialog from './AttendeeJoinDialog';
 

@@ -1,9 +1,6 @@
 import React, { ChangeEvent } from 'react';
 import { Typography, Button, TextField, Box, Divider } from '@material-ui/core';
-import ExerciseSlideContent, {
-    ExerciseProps,
-    ExerciseState
-} from './ExerciseSlideContent';
+import ExerciseSlideContent from './ExerciseSlideContent';
 import ExerciseResult from './ExerciseResult';
 
 export default class TextAnswerSlideContent extends ExerciseSlideContent {

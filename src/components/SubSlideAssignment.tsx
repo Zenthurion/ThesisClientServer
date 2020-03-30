@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography, Divider } from '@material-ui/core';
-import { Droppable, Draggable } from 'react-beautiful-dnd';
+import { Droppable } from 'react-beautiful-dnd';
 import {
     IAttendeeData,
     IPresentationStructureContentSlide
