@@ -2,6 +2,8 @@ import React, { ChangeEvent } from 'react';
 import { Typography, Button, TextField, Box, Divider } from '@material-ui/core';
 import ExerciseSlideContent from './ExerciseSlideContent';
 import ExerciseResult from './ExerciseResult';
+import { IInteractionData } from '../events/ClientEvents';
+import AttendeeEvents from '../events/AttendeeEvents';
 
 export default class TextAnswerSlideContent extends ExerciseSlideContent {
     render() {
@@ -65,6 +67,13 @@ export default class TextAnswerSlideContent extends ExerciseSlideContent {
         event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         this.setState({ current: event.target.value });
+        const interaction: IInteractionData = {
+            slideIndex: this.props.slideIndex,
+            submitted: false,
+            type: this.props.slide.type,
+            data: event.target.value
+        };
+        this.props.socket.emit(AttendeeEvents.Interaction, interaction);
     };
 
     private renderSubmit = () => {

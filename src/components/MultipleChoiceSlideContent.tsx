@@ -2,6 +2,8 @@ import React from 'react';
 import { Typography, Button, Box, Divider } from '@material-ui/core';
 import ExerciseResult from './ExerciseResult';
 import ExerciseSlideContent from './ExerciseSlideContent';
+import AttendeeEvents from '../events/AttendeeEvents';
+import { IInteractionData } from '../events/ClientEvents';
 
 export default class MultipleChoiceSlideContent extends ExerciseSlideContent {
     render() {
@@ -77,5 +79,12 @@ export default class MultipleChoiceSlideContent extends ExerciseSlideContent {
 
     private handleChoice = (index: number) => {
         this.setState({ current: index.toString() });
+        const interaction: IInteractionData = {
+            slideIndex: this.props.slideIndex,
+            submitted: false,
+            type: this.props.slide.type,
+            data: index.toString()
+        };
+        this.props.socket.emit(AttendeeEvents.Interaction, interaction);
     };
 }

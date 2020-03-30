@@ -67,6 +67,7 @@ export default class PresentationView extends React.Component<Props> {
                 return (
                     <MultipleChoiceSlideContent
                         socket={this.props.socket}
+                        slideIndex={this.props.slideIndex}
                         controller={this.props.controller}
                         slide={this.props.content}></MultipleChoiceSlideContent>
                 );
@@ -74,6 +75,7 @@ export default class PresentationView extends React.Component<Props> {
                 return (
                     <TextAnswerSlideContent
                         socket={this.props.socket}
+                        slideIndex={this.props.slideIndex}
                         controller={this.props.controller}
                         slide={this.props.content}></TextAnswerSlideContent>
                 );

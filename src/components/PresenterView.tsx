@@ -181,7 +181,10 @@ export default class PresenterView extends React.Component<Props, State> {
                             display='flex'
                             width='100%'
                             height='calc(100% - 40px)'>
-                            <AttendeeList attendees={this.state.attendees} />
+                            <AttendeeList
+                                slideIndex={this.state.currentSlideIndex}
+                                attendees={this.state.attendees}
+                            />
                         </Box>
                         <Box display='flex' width='100%' height='40px'>
                             <Button
@@ -318,6 +321,7 @@ export default class PresenterView extends React.Component<Props, State> {
             PresenterEvents.EmitSessionData,
             (data: ISessionDataData) => {
                 this.setState({ attendees: data.attendees });
+                console.log(data.attendees[0].interactions);
             }
         );
     }
