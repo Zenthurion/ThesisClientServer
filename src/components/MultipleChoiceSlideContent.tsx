@@ -13,6 +13,7 @@ export default class MultipleChoiceSlideContent extends ExerciseSlideContent {
                     open={this.state.answer !== ''}
                     answer={this.state.answer}
                     validation={this.props.slide.content.validation}
+                    valid={this.vaildateAnswer()}
                 />
                 <Box
                     display='flex'
@@ -82,6 +83,7 @@ export default class MultipleChoiceSlideContent extends ExerciseSlideContent {
         const interaction: IInteractionData = {
             slideIndex: this.props.slideIndex,
             submitted: false,
+            valid: false,
             type: this.props.slide.type,
             data: index.toString()
         };

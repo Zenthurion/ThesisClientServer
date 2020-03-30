@@ -321,7 +321,6 @@ export default class PresenterView extends React.Component<Props, State> {
             PresenterEvents.EmitSessionData,
             (data: ISessionDataData) => {
                 this.setState({ attendees: data.attendees });
-                console.log(data.attendees[0].interactions);
             }
         );
     }

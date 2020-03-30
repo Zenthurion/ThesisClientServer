@@ -3,6 +3,7 @@ import { IAttendeeData } from '../events/PresenterEvents';
 import { Box, Typography } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import CachedIcon from '@material-ui/icons/Cached';
+import ClearIcon from '@material-ui/icons/Clear';
 
 interface Props {
     attendee: IAttendeeData;
@@ -28,7 +29,9 @@ export default class AttendeeListItem extends React.Component<Props> {
             this.props.slideIndex
         ];
         if (!interaction || interaction.data === '') return '';
-        if (interaction.submitted) return <CheckIcon />;
-        else return <CachedIcon />;
+        if (interaction.submitted) {
+            if (interaction.valid) return <CheckIcon />;
+            else return <ClearIcon />;
+        } else return <CachedIcon />;
     };
 }

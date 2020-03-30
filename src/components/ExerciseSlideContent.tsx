@@ -30,9 +30,26 @@ export default class ExerciseSlideContent extends React.Component<
         const interaction: IInteractionData = {
             slideIndex: this.props.slideIndex,
             submitted: true,
+            valid: this.vaildateAnswer(),
             type: this.props.slide.type,
             data: this.state.current
         };
         this.props.socket.emit(AttendeeEvents.Interaction, interaction);
+    };
+
+    vaildateAnswer = (): boolean => {
+        if (!this.props.slide.content.validation) return false;
+        const validated = this.props.slide.content.validation.filter(
+            valid =>
+                valid
+                    .toString()
+                    .toLowerCase()
+                    .trim() ===
+                this.state.current
+                    .toString()
+                    .toLowerCase()
+                    .trim()
+        );
+        return validated.length > 0;
     };
 }

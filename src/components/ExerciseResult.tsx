@@ -10,6 +10,7 @@ interface Props {
     open: boolean;
     answer: string;
     validation?: string[];
+    valid?: boolean;
 }
 
 export default class ExerciseResult extends React.Component<Props> {
@@ -22,7 +23,7 @@ export default class ExerciseResult extends React.Component<Props> {
                         {this.props.validation === undefined ||
                         this.props.validation.length === 0
                             ? 'Submitted'
-                            : this.vaildateAnswer()
+                            : this.props.valid ?? false
                             ? 'Correct!'
                             : 'Incorrect'}
                     </DialogContent>
@@ -30,20 +31,4 @@ export default class ExerciseResult extends React.Component<Props> {
             </Backdrop>
         );
     }
-
-    vaildateAnswer = () => {
-        if (!this.props.validation) return false;
-        const validated = this.props.validation.filter(
-            valid =>
-                valid
-                    .toString()
-                    .toLowerCase()
-                    .trim() ===
-                this.props.answer
-                    .toString()
-                    .toLowerCase()
-                    .trim()
-        );
-        return validated.length > 0;
-    };
 }
