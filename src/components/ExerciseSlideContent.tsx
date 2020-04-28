@@ -32,23 +32,23 @@ export default class ExerciseSlideContent extends React.Component<
             submitted: true,
             valid: this.vaildateAnswer(),
             type: this.props.slide.type,
-            data: this.state.current
+            data: this.state.current,
         };
         this.props.socket.emit(AttendeeEvents.Interaction, interaction);
     };
 
+    componentWillReceiveProps(nextProps: ExerciseProps) {
+        if (this.props.slide.content.body !== nextProps.slide.content.body) {
+            this.setState({ answer: '', current: '' });
+        }
+    }
+
     vaildateAnswer = (): boolean => {
         if (!this.props.slide.content.validation) return false;
         const validated = this.props.slide.content.validation.filter(
-            valid =>
-                valid
-                    .toString()
-                    .toLowerCase()
-                    .trim() ===
-                this.state.current
-                    .toString()
-                    .toLowerCase()
-                    .trim()
+            (valid) =>
+                valid.toString().toLowerCase().trim() ===
+                this.state.current.toString().toLowerCase().trim()
         );
         return validated.length > 0;
     };
