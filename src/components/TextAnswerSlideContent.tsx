@@ -27,12 +27,15 @@ export default class TextAnswerSlideContent extends ExerciseSlideContent {
                 <Divider />
                 <Box
                     display='flex'
+                    flexDirection='column'
                     alignItems='center'
                     justifyContent='center'
                     height='calc(60% - 70px)'>
-                    <Typography variant='body1'>
-                        {this.props.slide.content.body}
-                    </Typography>
+                    {this.props.slide.content.body.map((body, i) => (
+                        <Typography key={'body' + i} variant='body1'>
+                            {body}
+                        </Typography>
+                    ))}
                 </Box>
                 {this.renderInput()}
                 {this.renderSubmit()}
@@ -73,7 +76,7 @@ export default class TextAnswerSlideContent extends ExerciseSlideContent {
             submitted: false,
             valid: false,
             type: this.props.slide.type,
-            data: event.target.value
+            data: event.target.value,
         };
         this.props.socket.emit(AttendeeEvents.Interaction, interaction);
     };

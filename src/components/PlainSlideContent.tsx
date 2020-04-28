@@ -23,12 +23,15 @@ export default class PlainSlideContent extends React.Component<Props> {
                 <Divider />
                 <Box
                     display='flex'
+                    flexDirection='column'
                     alignItems='center'
                     justifyContent='center'
                     height='calc(100% - 70px)'>
-                    <Typography variant='body1'>
-                        {this.props.slide.content.body}
-                    </Typography>
+                    {this.props.slide.content.body.map((body, i) => (
+                        <Typography key={'body' + i} variant='body1'>
+                            {body}
+                        </Typography>
+                    ))}
                 </Box>
             </Box>
         );

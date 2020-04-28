@@ -3,7 +3,7 @@ import SlideContent from '../SlideContent';
 import { Typography, Button, Box, Divider } from '@material-ui/core';
 import ClientEvents, { IAssignContentData } from '../events/ClientEvents';
 import PresenterEvents, {
-    IRequestSlideChangeData
+    IRequestSlideChangeData,
 } from '../events/PresenterEvents';
 
 interface Props {
@@ -29,12 +29,15 @@ export default class SlideChoiceSlideContent extends React.Component<Props> {
                 <Divider />
                 <Box
                     display='flex'
+                    flexDirection='column'
                     alignItems='center'
                     justifyContent='center'
                     height='calc(85% - 70px)'>
-                    <Typography variant='body1'>
-                        {this.props.slide.content.body}
-                    </Typography>
+                    {this.props.slide.content.body.map((body, i) => (
+                        <Typography key={'body' + i} variant='body1'>
+                            {body}
+                        </Typography>
+                    ))}
                 </Box>
                 <Box
                     display='flex'
@@ -62,13 +65,13 @@ export default class SlideChoiceSlideContent extends React.Component<Props> {
     private assignToSlide = (index: number) => {
         const assignmentData: IAssignContentData = {
             slideIndex: this.props.slideIndex + 1,
-            subIndex: index
+            subIndex: index,
         };
         this.props.socket.emit(ClientEvents.AssignContent, assignmentData);
 
         if (this.props.controller === 'presenter') {
             const slideChangeData: IRequestSlideChangeData = {
-                slide: this.props.slideIndex + 1
+                slide: this.props.slideIndex + 1,
             };
             this.props.socket.emit(
                 PresenterEvents.RequestSlideChange,

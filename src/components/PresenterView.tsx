@@ -5,7 +5,7 @@ import SocketIOClient from 'socket.io-client';
 import SlideContent from '../SlideContent';
 import AttendeeList from './AttendeeList';
 import PresentationStructureView, {
-    ISelectionResult
+    ISelectionResult,
 } from './PresentationStructureView';
 import ClientEvents, { IPresentationContentData } from '../events/ClientEvents';
 import PresenterEvents, {
@@ -15,7 +15,7 @@ import PresenterEvents, {
     IRequestSlideChangeData,
     IPresentationStructure,
     IPresentationStructureSlide,
-    IAttendeeData
+    IAttendeeData,
 } from '../events/PresenterEvents';
 import SlideAssignment from './SlideAssignment';
 
@@ -34,7 +34,7 @@ interface State {
 
 enum View {
     Presentation,
-    Management
+    Management,
 }
 
 interface Props {
@@ -52,15 +52,15 @@ export default class PresenterView extends React.Component<Props, State> {
             message: {
                 slide: {
                     type: 'PlainSlide',
-                    content: { title: 'Uninitialised', body: 'Uninitialised' }
-                }
+                    content: { title: 'Uninitialised', body: [''] },
+                },
             },
             sessionId: 'Loading Session ID',
             currentSlideIndex: 0,
             presentationStructure: { slides: [] },
             presentationStructureVisibility: false,
             attendees: [],
-            view: View.Presentation
+            view: View.Presentation,
         };
         const backendIp = process.env.REACT_APP_BACKEND_IP ?? 'localhost';
         const backendPort = process.env.REACT_APP_BACKEND_PORT ?? '3001';
@@ -251,14 +251,14 @@ export default class PresenterView extends React.Component<Props, State> {
         slide: IPresentationStructureSlide
     ): ISelectionResult => {
         const slideRequest: IRequestSlideChangeData = {
-            slide: index
+            slide: index,
         };
 
         this.socket.emit(PresenterEvents.RequestSlideChange, slideRequest);
 
         const result: ISelectionResult = {
             valid: true,
-            text: 'Live'
+            text: 'Live',
         };
 
         return result;
@@ -266,7 +266,7 @@ export default class PresenterView extends React.Component<Props, State> {
 
     private nextSlide = () => {
         const slideRequest: IRequestSlideChangeData = {
-            slide: this.state.currentSlideIndex + 1
+            slide: this.state.currentSlideIndex + 1,
         };
 
         this.socket.emit(PresenterEvents.RequestSlideChange, slideRequest);
@@ -274,7 +274,7 @@ export default class PresenterView extends React.Component<Props, State> {
 
     private previousSlide = () => {
         const slideRequest: IRequestSlideChangeData = {
-            slide: this.state.currentSlideIndex - 1
+            slide: this.state.currentSlideIndex - 1,
         };
 
         this.socket.emit(PresenterEvents.RequestSlideChange, slideRequest);
@@ -283,7 +283,7 @@ export default class PresenterView extends React.Component<Props, State> {
     private togglePresentationStructure = () => {
         this.setState({
             presentationStructureVisibility: !this.state
-                .presentationStructureVisibility
+                .presentationStructureVisibility,
         });
     };
 
@@ -291,7 +291,7 @@ export default class PresenterView extends React.Component<Props, State> {
         this.socket.emit(PresenterEvents.PresenterConnected);
 
         const presentationRequest: IRequestNewSessionData = {
-            presentationRef: '0'
+            presentationRef: '0',
         };
         this.socket.emit(
             PresenterEvents.RequestNewSession,
@@ -302,7 +302,7 @@ export default class PresenterView extends React.Component<Props, State> {
             (data: INewSessionData) => {
                 this.setState({
                     sessionId: data.sessionId,
-                    presentationStructure: data.presentationStructure
+                    presentationStructure: data.presentationStructure,
                 });
             }
         );
@@ -311,9 +311,9 @@ export default class PresenterView extends React.Component<Props, State> {
             (data: IPresentationContentData) => {
                 this.setState({
                     message: {
-                        slide: data.currentSlide
+                        slide: data.currentSlide,
                     },
-                    currentSlideIndex: data.index
+                    currentSlideIndex: data.index,
                 });
             }
         );

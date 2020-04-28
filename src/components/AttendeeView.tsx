@@ -31,11 +31,11 @@ export default class AttendeeView extends React.Component<Props, State> {
             message: {
                 slide: {
                     type: 'PlainSlide',
-                    content: { title: '', body: '' }
-                }
+                    content: { title: '', body: [''] },
+                },
             },
             currentSlideIndex: 0,
-            sessionId: ''
+            sessionId: '',
         };
         const backendIp = process.env.REACT_APP_BACKEND_IP ?? 'localhost';
         const backendPort = process.env.REACT_APP_BACKEND_PORT ?? '3001';
@@ -80,12 +80,12 @@ export default class AttendeeView extends React.Component<Props, State> {
         username: string
     ) => {
         this.setState({
-            sessionId
+            sessionId,
         });
 
         const joinSessionData: IJoinSessionData = {
             sessionId,
-            username
+            username,
         };
         this.socket.emit(AttendeeEvents.JoinSession, joinSessionData);
 
@@ -99,9 +99,9 @@ export default class AttendeeView extends React.Component<Props, State> {
     private handlePresentationContent = (data: IPresentationContentData) => {
         this.setState({
             message: {
-                slide: data.currentSlide
+                slide: data.currentSlide,
             },
-            currentSlideIndex: data.index
+            currentSlideIndex: data.index,
         });
     };
 

@@ -27,12 +27,15 @@ export default class MultipleChoiceSlideContent extends ExerciseSlideContent {
                 <Divider />
                 <Box
                     display='flex'
+                    flexDirection='column'
                     alignItems='center'
                     justifyContent='center'
                     height='calc(70% - 70px)'>
-                    <Typography variant='body1'>
-                        {this.props.slide.content.body}
-                    </Typography>
+                    {this.props.slide.content.body.map((body, i) => (
+                        <Typography key={'body' + i} variant='body1'>
+                            {body}
+                        </Typography>
+                    ))}
                 </Box>
                 <Box
                     display='flex'
@@ -85,7 +88,7 @@ export default class MultipleChoiceSlideContent extends ExerciseSlideContent {
             submitted: false,
             valid: false,
             type: this.props.slide.type,
-            data: index.toString()
+            data: index.toString(),
         };
         this.props.socket.emit(AttendeeEvents.Interaction, interaction);
     };
