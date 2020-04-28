@@ -1,6 +1,6 @@
 import React from 'react';
 import { IAttendeeData } from '../events/PresenterEvents';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Tooltip } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import CachedIcon from '@material-ui/icons/Cached';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -13,16 +13,31 @@ interface Props {
 export default class AttendeeListItem extends React.Component<Props> {
     render() {
         return (
-            <Box width={'100%'} display='flex' flexDirection='row'>
-                <Box width='70%' display='flex'>
-                    <Typography>{this.props.attendee.name}</Typography>
+            <Tooltip title={this.getTooltipText()}>
+                <Box width={'100%'} display='flex' flexDirection='row'>
+                    <Box width='70%' display='flex'>
+                        <Typography>{this.props.attendee.name}</Typography>
+                    </Box>
+                    <Box width='30%' display='flex' justifyContent='flex-end'>
+                        <Typography>
+                            {this.renderInteractionStatus()}
+                        </Typography>
+                    </Box>
                 </Box>
-                <Box width='30%' display='flex' justifyContent='flex-end'>
-                    <Typography>{this.renderInteractionStatus()}</Typography>
-                </Box>
-            </Box>
+            </Tooltip>
         );
     }
+
+    private getTooltipText = () => {
+        const interaction = this.props.attendee.interactions[
+            this.props.slideIndex
+        ];
+        if (!interaction || interaction.data === '') return '';
+        if (interaction.submitted) {
+            if (interaction.valid) return 'Correct';
+            else return 'Incorrect';
+        } else return 'In Progress';
+    };
 
     private renderInteractionStatus = () => {
         const interaction = this.props.attendee.interactions[
